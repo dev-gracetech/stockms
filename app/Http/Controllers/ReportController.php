@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\Models\StockTransfer;
 use App\Models\Stock;
 use App\Models\Branch;
-use App\Models\SystemSetting as StockSettting;
+use App\Models\SystemSetting;
 
 class ReportController extends Controller
 {
@@ -48,7 +48,7 @@ class ReportController extends Controller
         // Fetch all stocks with their branch quantities
         $stocks = Stock::with('branches')->get();
 
-        $settings = StockSetting::first();
+        $settings = SystemSetting::first();
         $overstockThreshold = $settings->high_stock_threshold;
         $lessStockThreshold = $settings->low_stock_threshold;
         $expiryAlertDays = $settings->expiry_alert_days;

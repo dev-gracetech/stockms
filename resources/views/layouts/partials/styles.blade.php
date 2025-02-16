@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="{{ asset('assets/compiled/css/table-datatable-jquery.css')}}">
 <link rel="stylesheet" href="{{ asset('assets/compiled/css/app.css')}}">
 <link rel="stylesheet" href="{{ asset('assets/compiled/css/app-dark.css')}}">
-<link rel="stylesheet" href="{{ asset('assets/extensions/chart.js/chart.css')}}">
+<link rel="stylesheet" href="{{ asset('assets/chartjs/Chart.css')}}">
 
 <!-- Styles -->
 {{-- <link rel="stylesheet" href="{{ mix('css/bootstrap.css') }}">

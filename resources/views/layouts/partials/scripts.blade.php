@@ -9,7 +9,7 @@
 <script src="{{ asset('assets/extensions/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/extensions/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
 <script src="{{ asset('assets/static/js/pages/datatables.js') }}"></script>
-<script src="{{ asset('assets/extensions/chart.js/chart.min.js') }}"></script>
+<script src="{{ asset('assets/chartjs/Chart.min.js') }}"></script>
 <script src="{{ asset('assets/compiled/js/app.js') }}"></script>
 {{-- <script src="{{ asset('js/main.js') }}"></script> --}}
 
