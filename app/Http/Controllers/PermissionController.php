@@ -26,6 +26,13 @@ class PermissionController extends Controller
         return redirect()->route('permissions.index')->with('success', 'Permission created successfully.');
     }
 
+    public function edit(Permission $permission)
+    {
+        return response()->json([
+            'name' => $permission->name,
+        ]);
+    }
+
     // Update a permission
     public function update(Request $request, Permission $permission)
     {

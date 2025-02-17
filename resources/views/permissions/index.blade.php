@@ -13,7 +13,7 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <div class="col-md-6">
+                <div class="col-md-6 mt-2">
                     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createPermissionModal">
                         Add Permission
                     </button>
@@ -33,41 +33,17 @@
                                 <tr>
                                     <td>{{ $permission->name }}</td>
                                     <td>
-                                        <a href="{{ route('permissions.edit', $permission->id) }}"class="btn btn-primary" data-bs-toggle="tooltip" 
-                                            data-bs-placement="top" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                        <button type="button" class="btn btn-primary btn-sm edit-permission" data-id="{{ $permission->id }}" data-bs-toggle="modal" 
+                                            data-bs-target="#editPermissionModal" title="Edit"><i class="bi bi-pencil-square"></i>
+                                        </button>
                                         <form action="{{ route('permissions.destroy', $permission->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" data-bs-toggle="tooltip" 
+                                            <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" 
                                             data-bs-placement="top" title="Delete"><i class="bi bi-trash"></i></button>
                                         </form>
                                     </td>
                                 </tr>
-                                <!-- Edit Permission Modal -->
-                                <div class="modal fade" id="editPermissionModal{{ $permission->id }}" tabindex="-1" aria-labelledby="editPermissionModalLabel{{ $permission->id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="editPermissionModalLabel{{ $permission->id }}">Edit Permission</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <form action="{{ route('permissions.update', $permission->id) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <div class="modal-body">
-                                                    <div class="form-group">
-                                                        <label for="name">Name</label>
-                                                        <input type="text" name="name" class="form-control" value="{{ $permission->name }}" required>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Update</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
                             @endforeach
                         </tbody>
                     </table>
@@ -100,4 +76,61 @@
         </div>
     </div>
 </div>
+<!-- Edit Permission Modal -->
+<div class="modal fade" id="editPermissionModal" tabindex="-1" aria-labelledby="editPermissionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPermissionModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editPermissionForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit_name">Name</label>
+                        <input type="text" name="name" id="edit_name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('custom-scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all "Edit" buttons
+            const editButtons = document.querySelectorAll('.edit-permission');
+
+            // Add click event listeners to each "Edit" button
+            editButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Get user data from the button's data attributes
+                    const permId = button.getAttribute('data-id');
+
+                    $.ajax({
+                        url: `/permissions/${permId}/edit`,
+                        method: 'GET',
+                        success: function(response) {
+                            // Populate the edit modal with user data
+                            $('#edit_name').val(response.name);
+
+                            // Update the form action URL
+                            $('#editPermissionForm').attr('action', `/permissions/${permId}`);
+                        },
+                        error: function(xhr) {
+                            alert('An error occurred while fetching permission data.');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 @endsection
