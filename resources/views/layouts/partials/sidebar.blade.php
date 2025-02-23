@@ -30,14 +30,22 @@
                         <li class="submenu-item">
                             <a href="{{route('stocks.index')}}" class="submenu-link">Stock</a>
                         </li>
+                        {{-- <li class="submenu-item">
+                            <a href="{{route('warehouses.index')}}" class="submenu-link">Warehouse</a>
+                        </li> --}}
                         <li class="submenu-item">
                             <a href="{{route('branches.index')}}" class="submenu-link">Branch</a>
                         </li>
-                        {{-- <li class="submenu-item">
+                        <li class="submenu-item">
                             <a href="{{route('stock-requests.index')}}" class="submenu-link">Stock Requests</a>
-                        </li> --}}
+                        </li>
+                        @can('stock_transfer')
                         <li class="submenu-item">
                             <a href="{{route('stock-transfers.index')}}" class="submenu-link">Stock Transfers</a>
+                        </li>
+                        @endcan
+                        <li class="submenu-item">
+                            <a href="{{route('stock-movements.index')}}" class="submenu-link">Stock Movements</a>
                         </li>
                         @haspermission('stock-create')
                         <li class="submenu-item">
@@ -66,7 +74,7 @@
                         </li>
                     </ul>
                 </li>
-                @haspermission('user-manage')
+                @haspermission('user_manage')
                 <li class="sidebar-item  has-sub">
                     <a href="#" class='sidebar-link'>
                         <i class="bi bi-people"></i>

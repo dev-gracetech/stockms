@@ -24,6 +24,10 @@
                         <input type="number" name="quantity" class="form-control" value="{{ $stock->quantity }}" required>
                     </div>
                     <div class="form-group">
+                        <label for="batch">Batch Number</label>
+                        <input type="text" name="batch" class="form-control" value="{{ $stock->batch }}" required>
+                    </div>
+                    <div class="form-group">
                         <label for="expiry_date">Expiry Date</label>
                         <input type="date" name="expiry_date" class="form-control" value="{{ $stock->expiry_date }}" required>
                     </div>

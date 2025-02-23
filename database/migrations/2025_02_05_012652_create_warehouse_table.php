@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stocks', function (Blueprint $table) {
+        Schema::create('warehouses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('quantity')->default(0);
-            $table->string('batch');
             $table->string('location')->nullable();
-            $table->date('expiry_date')->nullable();
-            $table->decimal('price', 8, 2)->default('0.00');
-            $table->foreignId('warehouse_id')->constrained('warehouses');
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stocks');
+        Schema::dropIfExists('warehouses');
     }
 };

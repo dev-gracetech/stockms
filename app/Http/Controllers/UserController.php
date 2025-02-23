@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Branch;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -16,7 +17,8 @@ class UserController extends Controller
     {
         $users = User::all(); // Fetch all users
         $roles = Role::all();
-        return view('users.index', compact('users', 'roles'));
+        $branches = Branch::all();
+        return view('users.index', compact('users', 'roles', 'branches'));
     }
 
     /**
@@ -142,27 +144,35 @@ class UserController extends Controller
         return response()->json(['success' => true, 'message' => 'Role removed successfully.']);
     }
 
-    // Add roles to a user
-    public function addRoles(Request $request, User $user)
+    public function assignBranch(Request $request, User $user, )
     {
-        $request->validate([
-            'roles' => 'required|array',
-        ]);
+        //$user = User::findOrFail($userId);
+        //$request->validate([
+        //    'branch' => 'required|string|exists:branches,name',
+        //]);
 
-        $user->assignRole($request->roles);
+        //$branchId = $request->branch; // Assume branch_id is passed in the request
 
-        return redirect()->route('users.edit', $user->id)->with('success', 'Roles added successfully.');
+        // Attach the branch to the user
+        $user->branches()->sync($request->branch);
+
+        return response()->json(['success' => true, 'message' => 'Branch assigned successfully.']);
+        //return redirect()->route('user.index', $userId)->with('success', 'Branches assigned successfully.');
     }
 
-    // Remove roles from a user
-    public function removeRoles(Request $request, User $user)
+    public function removeBranch(Request $request, User $user)
     {
-        $request->validate([
-            'roles' => 'required|array',
+        //$user = User::findOrFail($userId);
+        $branchId = $request->branch;
+
+        // Detach the branch from the user
+        $user->branches()->detach($branchId);
+
+        // Return updated list of branches as JSON
+        $branches = $user->branches;
+        return response()->json([
+            'success' => true,
+            'message' => 'Branch removed successfully.'
         ]);
-
-        $user->removeRole($request->roles);
-
-        return redirect()->route('users.edit', $user->id)->with('success', 'Roles removed successfully.');
     }
 }

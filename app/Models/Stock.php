@@ -9,7 +9,7 @@ class Stock extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['name', 'quantity', 'expiry_date', 'price'];
+    protected $fillable = ['name', 'quantity', 'batch', 'expiry_date', 'price', 'warehouse_id'];
     
     public function stockTransfers()
     {
@@ -22,5 +22,15 @@ class Stock extends Model
         return $this->belongsToMany(Branch::class)
             ->withPivot('quantity') // Include the quantity field from the pivot table
             ->withTimestamps();
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
     }
 }

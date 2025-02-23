@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SystemSetting;
+use App\Models\Warehouse;
 
 class SystemSettingController extends Controller
 {
-    public function edit()
+    public function index()
     {
         $settings = SystemSetting::first();
-        return view('system-settings.edit', compact('settings'));
+        $warehouses = Warehouse::all();
+        return view('system-settings.index', compact('settings', 'warehouses'));
     }
 
     public function update(Request $request)

@@ -18,4 +18,14 @@ class Branch extends Model
             ->withPivot('quantity') // Include the quantity field from the pivot table
             ->withTimestamps();
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'branch_user');
+    }
+
+    public function stockRequests()
+    {
+        return $this->hasMany(StockRequest::class);
+    }
 }

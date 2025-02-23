@@ -27,6 +27,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Roles</th>
+                                <th>Branches</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -44,8 +45,19 @@
                                         @endforeach
                                     </td>
                                     <td>
+                                        @foreach($user->branches as $branch)
+                                            <span class="badge bg-secondary">{{ $branch->name }}
+                                                <i style='cursor:pointer' data-user-id="{{ $user->id }}" data-branch-name="{{ $branch->name }}"
+                                                    class='bi bi-trash remove-branch'></i>
+                                            </span>
+                                        @endforeach
+                                    </td>
+                                    <td>
                                         <button type="button" class="btn btn-info btn-sm assign-role" data-user-id="{{ $user->id }}" data-bs-toggle="modal" 
                                             data-bs-target="#assignRoleModal" title="Assign Role"><i class="bi bi-person-gear"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm assign-branch" data-user-id="{{ $user->id }}" data-bs-toggle="modal" 
+                                            data-bs-target="#assignBranchModal" title="Assign Branch"><i class="bi bi-person-workspace"></i>
                                         </button>
                                         <button type="button" class="btn btn-primary btn-sm edit-user" data-user-id="{{ $user->id }}" data-bs-toggle="modal" 
                                             data-bs-target="#editUserModal" title="Edit"><i class="bi bi-pencil-square"></i>
@@ -172,6 +184,36 @@
         </div>
     </div>
 </div>
+
+<!-- Assign Branch Modal -->
+<div class="modal fade" id="assignBranchModal" tabindex="-1" aria-labelledby="assignBranchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignBranchModalLabel">Assign Branch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="assignBranchForm" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" name="user_id" id="user_id" value="{{ $user->id }}">
+                        <label for="Branch">Branch</label>
+                        <select name="branch" id="branch" class="form-control" required>
+                            @foreach($branches as $branch)
+                                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('custom-scripts')
@@ -271,6 +313,69 @@
             }
         });
 
+        // Handle assign branch button click
+        $('.assign-branch').on('click', function() {
+            var userId = $(this).data('user-id');
+
+            // Update the form action URL
+            $('#assignBranchForm').attr('action', `/users/${userId}/assign-branch`);
+        });
+
+        // Handle form submission
+        $('#assignBranchForm').on('submit', function(e) {
+            e.preventDefault();
+
+            if (confirm('Are you sure you want to assign this branch?')) {
+                var form = $(this);
+                var url = form.attr('action');
+                var data = form.serialize();
+
+                // Send AJAX request to assign the role
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: data,
+                    success: function(response) {
+                        if (response.success) {
+                            // Reload the page to reflect the changes
+                            location.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while assigning the branch.');
+                    }
+                });
+            }
+        });
+        
+        // Handle remove role button click
+        $('.remove-branch').on('click', function() {
+            if (confirm('Are you sure you want to remove this branch?')) {
+                var userId = $(this).data('user-id');
+                var branchName = $(this).data('branch-name');
+                var button = $(this);
+
+                // Send AJAX request to remove the branch
+                $.ajax({
+                    url: `/users/${userId}/remove-branch`,
+                    method: 'POST',
+                    data: {
+                        branch: branchName,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Remove the branch badge from the UI
+                            button.closest('.badge').remove();
+                            alert(response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('An error occurred while removing the branch.');
+                    }
+                });
+            }
+        });
         // Function to show Bootstrap alert
         function showAlert(type, message) {
                 var alert = $('#alert');
