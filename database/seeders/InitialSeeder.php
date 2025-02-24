@@ -39,6 +39,9 @@ class InitialSeeder extends Seeder
         Permission::create(['name' => 'user_manage']);
         Permission::create(['name' => 'stock_manage']);
         Permission::create(['name' => 'stock_request_issue']);
+        Permission::create(['name' => 'branch_menu_access']);
+        Permission::create(['name' => 'warehouse_menu_access']);
+        Permission::create(['name' => 'stock_transfer']);
         Permission::create(['name' => 'system_setting_manage']);
 
         $role = Role::create(['name' => 'admin']);
