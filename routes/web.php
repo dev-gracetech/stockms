@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('stocks', StockController::class);
     Route::get('stocks/{stock}/edit-data', [StockController::class, 'editData'])->name('warehouses.edit-data');
     Route::resource('branches', BranchController::class);
+    Route::get('branches/{branch}/edit-data', [BranchController::class, 'editData'])->name('branches.edit-data');
     Route::resource('warehouses', WarehouseController::class);
     Route::get('warehouses/{warehouse}/edit-data', [WarehouseController::class, 'editData'])->name('warehouses.edit-data');
 

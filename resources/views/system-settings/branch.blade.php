@@ -1,14 +1,15 @@
 <div class="card">
     <div class="card-header">
         <div class="col-md-12 d-grid justify-content-md-end">
-            <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#createWarehouseModal">
-                <i class="bi bi-plus-circle"></i> Add Warehouse
+            <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" 
+                data-bs-target="#createBranchModal">
+                <i class="bi bi-plus-circle"></i> Add Branch
             </button>
         </div>
     </div>
     <div class="card-body mt-3">
         <div class="table-responsive">
-            <table class="table datatable" id="warehouseTable">
+            <table class="table datatable" id="branchesTable">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -17,19 +18,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($warehouses as $warehouse)
+                    @foreach($branches as $branch)
                         <tr>
-                            <td>{{ $warehouse->name }}</td>
-                            <td>{{ $warehouse->location }}</td>
+                            <td>{{ $branch->name }}</td>
+                            <td>{{ $branch->location }}</td>
                             <td>
                                 <!-- Edit Button -->
-                                <button class="btn btn-primary btn-sm edit-warehouse" data-id="{{ $warehouse->id }}"
-                                    data-bs-toggle="modal" data-bs-target="#editWarehouseModal" title="Edit">
-                                    <i class="bi bi-pencil-square"></i>
+                                <button class="btn btn-sm btn-primary edit-branch" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editBranchModal"
+                                    data-id="{{ $branch->id }}"
+                                    title="Edit">
+                                    <i class="bi bi-pencil-square"></i>    
                                 </button>
-                                
                                 <!-- Delete Button -->
-                                <button class="btn btn-danger btn-sm delete-warehouse" data-id="{{ $warehouse->id }}" title="Delete">
+                                <button class="btn btn-danger btn-sm delete-branch" data-id="{{ $branch->id }}" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>
@@ -41,24 +44,24 @@
     </div>
 </div>
 
-<!-- Create Warehouse Modal -->
-<div class="modal fade" id="createWarehouseModal" tabindex="-1" aria-labelledby="createWarehouseModalLabel" aria-hidden="true">
+<!-- Create Branch Modal -->
+<div class="modal fade" id="createBranchModal" tabindex="-1" aria-labelledby="createBranchModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createWarehouseModalLabel">Add Warehouse</h5>
+                <h5 class="modal-title" id="createBranchModalLabel">Create Branch</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="createWarehouseForm">
+            <form id="createBranchForm" method="POST">
                 @csrf
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" name="name" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="location" name="location" required>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" name="location" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -70,26 +73,26 @@
     </div>
 </div>
 
-<!-- Edit Warehouse Modal -->
-<div class="modal fade" id="editWarehouseModal" tabindex="-1" aria-labelledby="editWarehouseModalLabel" aria-hidden="true">
+<!-- Edit Branch Modal -->
+<div class="modal fade" id="editBranchModal" tabindex="-1" aria-labelledby="editBranchModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editWarehouseModalLabel">Edit Warehouse</h5>
+                <h5 class="modal-title" id="editBranchModalLabel">Edit Branch</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editWarehouseForm">
+            <form id="editBranchForm" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <input type="hidden" id="edit_warehouse_id" name="id">
-                    <div class="mb-3">
-                        <label for="edit_name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                    <input type="hidden" id="edit_branch_id" name="id">
+                    <div class="form-group">
+                        <label for="edit_branch_name">Name</label>
+                        <input type="text" name="name" id="edit_branch_name" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="edit_location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="edit_location" name="location" required>
+                    <div class="form-group">
+                        <label for="edit_branch_location">Location</label>
+                        <input type="text" name="location" id="edit_branch_location" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -102,15 +105,15 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteWarehouseModal" tabindex="-1" aria-labelledby="deleteWarehouseModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteBranchModal" tabindex="-1" aria-labelledby="deleteBranchModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteWarehouseModalLabel">Delete Warehouse</h5>
+                <h5 class="modal-title" id="deleteBranchModalLabel">Delete Branch</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete this warehouse?
+                Are you sure you want to delete this branch?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -122,7 +125,6 @@
 
 @section('custom-scripts')
 <script>
-    // JavaScript for CRUD operations
     $(document).ready(function() {
         $.ajaxSetup({
             headers: {
@@ -130,15 +132,15 @@
             }
         });
 
-        // Create Warehouse
-        $('#createWarehouseForm').on('submit', function(e) {
+        // Create Branch
+        $('#createBranchForm').on('submit', function(e) {
             e.preventDefault();
             $.ajax({
-                url: "{{ route('warehouses.store') }}",
+                url: "{{ route('branches.store') }}",
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
-                    $('#createWarehouseModal').modal('hide');
+                    $('#createBranchModal').modal('hide');
                     location.reload(); // Reload the page to reflect changes
                 },
                 error: function(response) {
@@ -147,30 +149,30 @@
             });
         });
 
-        // Edit Warehouse
-        $('.edit-warehouse').on('click', function() {
-            var warehouseId = $(this).data('id');
+        // Edit Branch
+        $('.edit-branch').on('click', function() {
+            var branchId = $(this).data('id');
             $.ajax({
-                url: `/warehouses/${warehouseId}/edit-data`,
+                url: `/branches/${branchId}/edit-data`,
                 method: 'GET',
                 success: function(response) {
-                    $('#edit_warehouse_id').val(response.warehouse.id);
-                    $('#edit_name').val(response.warehouse.name);
-                    $('#edit_location').val(response.warehouse.location);
-                    $('#editWarehouseModal').modal('show');
+                    $('#edit_branch_id').val(branchId);
+                    $('#edit_branch_name').val(response.branch.name);
+                    $('#edit_branch_location').val(response.branch.location);
+                    $('#editBranchModal').modal('show');
                 }
             });
         });
 
-        $('#editWarehouseForm').on('submit', function(e) {
+        $('#editBranchForm').on('submit', function(e) {
             e.preventDefault();
-            var warehouseId = $('#edit_warehouse_id').val();
+            var branchId = $('#edit_branch_id').val();
             $.ajax({
-                url: "/warehouses/" + warehouseId,
+                url: "/branches/" + branchId,
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
-                    $('#editWarehouseModal').modal('hide');
+                    $('#editBranchModal').modal('hide');
                     location.reload(); // Reload the page to reflect changes
                 },
                 error: function(response) {
@@ -179,16 +181,16 @@
             });
         });
 
-        // Delete Warehouse
-        $('.delete-warehouse').on('click', function() {
-            var warehouseId = $(this).data('id');
-            $('#deleteWarehouseModal').modal('show');
+        // Delete Branch
+        $('.delete-branch').on('click', function() {
+            var branchId = $(this).data('id');
+            $('#deleteBranchModal').modal('show');
             $('#confirmDelete').on('click', function() {
                 $.ajax({
-                    url: "/warehouses/" + warehouseId,
+                    url: "/branches/" + branchId,
                     method: 'DELETE',
                     success: function(response) {
-                        $('#deleteWarehouseModal').modal('hide');
+                        $('#deleteBranchModal').modal('hide');
                         location.reload(); // Reload the page to reflect changes
                     },
                     error: function(response) {
@@ -197,6 +199,7 @@
                 });
             });
         });
+
     });
 </script>
 @endsection

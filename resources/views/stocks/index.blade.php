@@ -15,9 +15,9 @@
         <div id="responseMessage"></div>
         <div class="card">
             <div class="card-header">
-                <div class="col-md-6 mt-2">
-                    {{-- <a href="{{ route('stocks.create') }}" class="btn btn-primary">Add Stock</a> --}}
-                    <button class="btn btn-primary" id="createStockBtn" data-bs-toggle="modal" data-bs-target="#createStockModal">Create New Stock</button>
+                <div class="col-md-6 m-2">
+                    <button class="btn btn-primary" id="createStockBtn" data-bs-toggle="modal" data-bs-target="#createStockModal">
+                        <i class="bi bi-plus-circle"></i> Create New Stock</button>
                 </div>
             </div>
             <div class="card-body mt-3">
@@ -42,7 +42,7 @@
                                     <td>{{ $stock->batch }}</td>
                                     <td>{{ $stock->expiry_date }}</td>
                                     <td>{{ $stock->price }}</td>
-                                    <td>{{$stock->warehouse->name}}: {{$stock->warehouse->location }}</td>
+                                    <td>{{ $stock->location }}</td>
                                     <td>
                                         <button class="btn btn-primary btn-sm edit-stock" data-id="{{ $stock->id }}" 
                                             data-bs-toggle="modal" data-bs-target="#editStockModal" title="Edit">
@@ -92,6 +92,10 @@
                     <div class="mb-3">
                         <label for="expiry_date">Expiry Date</label>
                         <input type="date" name="expiry_date" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="location">Stock Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
                     </div>
                     <div class="mb-3">
                         <label for="warehouse_id">Warehouse</label>
@@ -145,15 +149,10 @@
                         <label for="expiry_date">Expiry Date</label>
                         <input type="date" name="expiry_date" id="edit_expiry_date" class="form-control">
                     </div>
-                    {{-- <div class="mb-3">
-                        <label for="warehouse_id">Warehouse</label>
-                        <select class="form-control" id="edit_warehouse_id" name="warehouse_id" required>
-                            <option value="">Select Warehouse</option>
-                            @foreach($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                            @endforeach
-                        </select>
-                    </div> --}}
+                    <div class="mb-3">
+                        <label for="edit_location">Stock Location</label>
+                        <input type="text" class="form-control" id="edit_location" name="location" required>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -224,6 +223,7 @@
                     $('#edit_batch').val(response.stock.batch);
                     $('#edit_price').val(response.stock.price);
                     $('#edit_expiry_date').val(response.stock.expiry_date); 
+                    $('#edit_location').val(response.stock.location);
                     $('#editStockModal').modal('show');
                 }
             });

@@ -13,7 +13,8 @@ class RoleController extends Controller
    {
        $roles = Role::all();
        $permissions = Permission::all();
-       return view('roles.index', compact('roles', 'permissions'));
+       $notifications = auth()->user()->notifications;
+       return view('roles.index', compact('roles', 'permissions', 'notifications'));
    }
 
    // Show the create role form

@@ -13,9 +13,9 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <div class="col-md-6 mt-2">
-                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createUserModal">
-                        Add User
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                        <i class="bi bi-plus-circle"></i> Add User
                     </button>
                 </div>
             </div>

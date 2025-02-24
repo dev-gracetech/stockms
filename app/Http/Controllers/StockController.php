@@ -14,8 +14,9 @@ class StockController extends Controller
     public function index()
     {
         $stocks = Stock::with('warehouse')->get();
-        $warehouses = Warehouse::all(); // For creating and updating stock items
-        return view('stocks.index', compact('stocks', 'warehouses'));
+        $warehouses = Warehouse::all();
+        $notifications = auth()->user()->notifications;
+        return view('stocks.index', compact('stocks', 'warehouses', 'notifications'));
     }
 
     // Show the create stock form
@@ -33,6 +34,7 @@ class StockController extends Controller
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'expiry_date' => 'required|date',
+            'location' => 'required|string|max:255',
             'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
@@ -64,6 +66,7 @@ class StockController extends Controller
             'batch' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
             'expiry_date' => 'required|date',
+            'location' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
         ]);
 

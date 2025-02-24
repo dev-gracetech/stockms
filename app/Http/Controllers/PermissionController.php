@@ -11,7 +11,8 @@ class PermissionController extends Controller
     public function index()
     {
         $permissions = Permission::all();
-        return view('permissions.index', compact('permissions'));
+        $notifications = auth()->user()->notifications;
+        return view('permissions.index', compact('permissions', 'notifications'));
     }
 
     // Store a new permission

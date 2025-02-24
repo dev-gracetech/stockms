@@ -15,7 +15,7 @@
             <div class="card-header">
                 <div class="col-md-6 mt-2">
                     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createRoleModal">
-                        Add Role</button>
+                        <i class="bi bi-plus-circle"></i> Add Role</button>
                 </div>
             </div>
             <div class="card-body mt-3">

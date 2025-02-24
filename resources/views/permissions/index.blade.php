@@ -15,7 +15,7 @@
             <div class="card-header">
                 <div class="col-md-6 mt-2">
                     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createPermissionModal">
-                        Add Permission
+                        <i class="bi bi-plus-circle"></i> Add Permission
                     </button>
                 </div>
             </div>

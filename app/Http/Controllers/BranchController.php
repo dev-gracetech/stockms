@@ -10,9 +10,10 @@ class BranchController extends Controller
     // List all branches
     public function index()
     {
-        //$branches = Branch::all();
-        $branches = Branch::with('stocks')->get();
-        return view('branches.index', compact('branches'));
+        $branches = Branch::all();
+        //$branches = Branch::with('stocks')->get();
+        $notifications = auth()->user()->notifications;
+        return view('branches.index', compact('branches','notifications'));
     }
 
     // Show the create branch form
@@ -31,7 +32,8 @@ class BranchController extends Controller
 
         Branch::create($request->all());
 
-        return redirect()->route('branches.index')->with('success', 'Branch created successfully.');
+        //return redirect()->route('branches.index')->with('success', 'Branch created successfully.');
+        return response()->json(['success' => 'Branch created successfully!']);
     }
 
     // Show the edit branch form
@@ -44,6 +46,11 @@ class BranchController extends Controller
         ]);
     }
 
+    public function editdata(Branch $branch)
+    {
+        return response()->json(['branch' => $branch]);
+    }
+
     // Update a branch
     public function update(Request $request, Branch $branch)
     {
@@ -54,14 +61,16 @@ class BranchController extends Controller
 
         $branch->update($request->all());
 
-        return redirect()->route('branches.index')->with('success', 'Branch updated successfully.');
+        //return redirect()->route('branches.index')->with('success', 'Branch updated successfully.');
+        return response()->json(['success' => 'Branch updated successfully!']);
     }
 
     // Delete a branch
     public function destroy(Branch $branch)
     {
         $branch->delete();
-        return redirect()->route('branches.index')->with('success', 'Branch deleted successfully.');
+        //return redirect()->route('branches.index')->with('success', 'Branch deleted successfully.');
+        return response()->json(['success' => 'Branch deleted successfully!']);
     }
 
     public function show(Branch $branch)

@@ -24,7 +24,8 @@ class ReportController extends Controller
 
         $issuedStocks = $query->get();
 
-        return view('reports.issued_stocks', compact('issuedStocks'));
+        $notifications = auth()->user()->notifications;
+        return view('reports.issued_stocks', compact('issuedStocks', 'notifications'));
     }
 
     // Show branch stock details
@@ -38,8 +39,9 @@ class ReportController extends Controller
         }
 
         $branches = $query->get();
-
-        return view('reports.branch_stock', compact('branches'));
+        
+        $notifications = auth()->user()->notifications;
+        return view('reports.branch_stock', compact('branches', 'notifications'));
     }
 
     // Show stock details with overstock, less stock, and expiry alerts
@@ -84,7 +86,8 @@ class ReportController extends Controller
             });
         }
 
-        return view('reports.stock_details', compact('stocks'));
+        $notifications = auth()->user()->notifications;
+        return view('reports.stock_details', compact('stocks','notifications'));
     }
 
     // Show expiry coming stock details
@@ -101,7 +104,8 @@ class ReportController extends Controller
         //$now = Carbon::now();
         //$daysRemaining = Carbon::parse($stock->expiry_date)->diffInDays(Carbon::now());
 
-        return view('reports.expiry_coming_stocks', compact('stocks', 'expiryAlertDays'));
+        $notifications = auth()->user()->notifications;
+        return view('reports.expiry_coming_stocks', compact('stocks', 'expiryAlertDays', 'notifications'));
     }
     
 }

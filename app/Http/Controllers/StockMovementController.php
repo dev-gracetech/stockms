@@ -10,9 +10,30 @@ class StockMovementController extends Controller
     // Display all stock movements
     public function index()
     {
-        $notifications = auth()->user()->notifications;
-        $movements = StockMovement::with(['stock', 'fromWarehouse', 'toBranch'])->get();
-        return view('stock-movements.index', compact('movements', 'notifications'));
+        $user = auth()->user();
+        $notifications = $user->notifications;
+        if ($user->hasRole('admin') or $user->hasRole('warehouse_manager'))
+        {
+            $movements = StockMovement::with(['stock', 'fromWarehouse', 'toBranch'])->get();
+            return view('stock-movements.index', compact('movements', 'notifications'));
+        } 
+        else 
+        {
+            $branch = $user->branches->pluck('id');
+            //$movements = StockMovement::with(['stock', 'fromWarehouse', 'toBranch'])->get();
+            $stockMovements = StockMovement::whereIn('to_branch_id', $branch)
+            ->with(['stock', 'fromWarehouse', 'toBranch'])
+            ->get()
+            ->groupBy('stock_id')
+            ->map(function ($movements) {
+                return [
+                    'stock' => $movements->first()->stock,
+                    'total_quantity' => $movements->sum('quantity'),
+                    'movements' => $movements,
+                ];
+            });
+            return view('branches.stock-list', compact('stockMovements', 'notifications'));
+        }
     }
 
     /**

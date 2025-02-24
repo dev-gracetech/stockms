@@ -10,24 +10,28 @@
     </div>
 </div>
 <div class="container-fluid">
+    <div class="col-md-12 d-grid justify-content-md-end">
+        <!-- Success or Error Messages -->
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
     <section class="section">
         <div class="card">
             <div class="card-header">
                 <div class="col-md-6">
                     <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#addStockRequestModal">
-                        Request Stock
+                        <i class="bi bi-plus-circle"></i> Request Stock
                     </button>
                 </div>
-                <!-- Success or Error Messages -->
-                @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @elseif(session('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
-                    </div>
-                @endif
             </div>
             <div class="card-body mt-3">
                 <table class="table datatable">

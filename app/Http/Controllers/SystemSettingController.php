@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SystemSetting;
 use App\Models\Warehouse;
+use App\Models\Branch;
 
 class SystemSettingController extends Controller
 {
@@ -12,7 +13,9 @@ class SystemSettingController extends Controller
     {
         $settings = SystemSetting::first();
         $warehouses = Warehouse::all();
-        return view('system-settings.index', compact('settings', 'warehouses'));
+        $branches = Branch::all();
+        $notifications = auth()->user()->notifications;
+        return view('system-settings.index', compact('settings', 'warehouses', 'branches', 'notifications'));
     }
 
     public function update(Request $request)

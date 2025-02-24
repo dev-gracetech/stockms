@@ -18,7 +18,7 @@
                         Total Stock Quantity by Branch
                     </div>
                     <div class="card-body">
-                        <canvas id="stockByBranchChart" width="400" height="200"></canvas>
+                        <canvas id="branchQuantityChart" width="400" height="200"></canvas>
                     </div>
                 </div>
             </div>
@@ -56,28 +56,6 @@
 @section('custom-scripts')
     <script>
         $(document).ready(function() {
-            // Total Stock Quantity by Branch Chart
-            var stockByBranchCtx = document.getElementById('stockByBranchChart').getContext('2d');
-            var stockByBranchChart = new Chart(stockByBranchCtx, {
-                type: 'bar',
-                data: {
-                    labels: @json($branchNames),
-                    datasets: [{
-                        label: 'Total Stock Quantity',
-                        data: @json($totalStockByBranch),
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
 
             // Stock Expiry Overview Chart
             var expiryCtx = document.getElementById('expiryChart').getContext('2d');
@@ -125,5 +103,39 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+        var branchQuantities = @json($branchQuantities);
+
+        var branchNames = branchQuantities.map(function (branch) {
+            return branch.branch_name;
+        });
+
+        var totalQuantities = branchQuantities.map(function (branch) {
+            return branch.total_quantity;
+        });
+
+        var ctx = document.getElementById('branchQuantityChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: branchNames,
+                datasets: [{
+                    label: 'Total Quantity per Branch',
+                    data: totalQuantities,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
     </script>
 @endsection

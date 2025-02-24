@@ -16,13 +16,15 @@ class StockRequestController extends Controller
     // Display all stock requests
     public function index()
     {
-        if (auth()->user()->hasRole('admin')) {
+        $user = auth()->user();
+        if ($user->hasRole('admin') or $user->hasRole('warehouse_manager')) {
             $stockRequests = StockRequest::with('branch', 'stock')
                                         ->orderBy('created_at', 'desc')
                                         ->get();
         } else {
+            $branch = $user->branches->pluck('id');
             $stockRequests = StockRequest::with('branch', 'stock')
-                                        ->where('branch_id', auth()->user()->branches()->first()->id)
+                                        ->where('branch_id', $branch)
                                         ->orderBy('created_at', 'desc')
                                         ->get();
         }

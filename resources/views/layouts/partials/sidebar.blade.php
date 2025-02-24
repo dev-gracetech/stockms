@@ -27,34 +27,32 @@
                         <span>Transaction</span>
                     </a>
                     <ul class="submenu">
+                        @can('warehouse_menu_access')
                         <li class="submenu-item">
-                            <a href="{{route('stocks.index')}}" class="submenu-link">Stock</a>
+                            <a href="{{route('stocks.index')}}" class="submenu-link">Warehouse Stock</a>
                         </li>
-                        {{-- <li class="submenu-item">
-                            <a href="{{route('warehouses.index')}}" class="submenu-link">Warehouse</a>
-                        </li> --}}
+                        @endcan
+                        @can('branch_menu_access')
                         <li class="submenu-item">
-                            <a href="{{route('branches.index')}}" class="submenu-link">Branch</a>
+                            <a href="{{route('stock-movements.index')}}" class="submenu-link">Branch Stock</a>
                         </li>
+                        @endcan
                         <li class="submenu-item">
                             <a href="{{route('stock-requests.index')}}" class="submenu-link">Stock Requests</a>
                         </li>
+                        @can('warehouse_menu_access')
+                        <li class="submenu-item">
+                            <a href="{{route('stock-movements.index')}}" class="submenu-link">Stock Movements</a>
+                        </li>
+                        @endcan
                         @can('stock_transfer')
                         <li class="submenu-item">
                             <a href="{{route('stock-transfers.index')}}" class="submenu-link">Stock Transfers</a>
                         </li>
                         @endcan
-                        <li class="submenu-item">
-                            <a href="{{route('stock-movements.index')}}" class="submenu-link">Stock Movements</a>
-                        </li>
-                        @haspermission('stock-create')
-                        <li class="submenu-item">
-                            <a href="{{route('stock-transfers.create')}}" class="submenu-link">Request Stock</a>
-                        </li>
-                        @endhaspermission
                     </ul>
                 </li>
-                <li class="sidebar-item  has-sub">
+                <li class="sidebar-item has-sub">
                     <a href="#" class='sidebar-link'>
                         <i class="bi bi-newspaper"></i>
                         <span>Reports</span>
@@ -74,7 +72,7 @@
                         </li>
                     </ul>
                 </li>
-                @haspermission('user_manage')
+                @can('user_manage')
                 <li class="sidebar-item  has-sub">
                     <a href="#" class='sidebar-link'>
                         <i class="bi bi-people"></i>
@@ -90,22 +88,9 @@
                         <li class="submenu-item">
                             <a href="{{route('permissions.index')}}" class="submenu-link">Permissions</a>
                         </li>
-                        {{-- <li class="submenu-item  has-sub">
-                            <a href='#' class='sidebar-link'>
-                                <i class="bi bi-people"></i>
-                                <span>Permissions</span></a>
-                            <ul class="submenu">
-                                <li class="submenu-item">
-                                    <a href="#" class="submenu-link">Permissions</a>
-                                </li>
-                                <li class="submenu-item">
-                                    <a href="#" class="submenu-link">Roles-Permissions</a>
-                                </li>
-                            </ul>
-                        </li> --}}
                     </ul>
                 </li>
-                @endhaspermission
+                @endcan
             </ul>
         </div>
     </div>  

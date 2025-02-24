@@ -18,7 +18,8 @@ class UserController extends Controller
         $users = User::all(); // Fetch all users
         $roles = Role::all();
         $branches = Branch::all();
-        return view('users.index', compact('users', 'roles', 'branches'));
+        $notifications = auth()->user()->notifications;
+        return view('users.index', compact('users', 'roles', 'branches', 'notifications'));
     }
 
     /**
@@ -146,13 +147,6 @@ class UserController extends Controller
 
     public function assignBranch(Request $request, User $user, )
     {
-        //$user = User::findOrFail($userId);
-        //$request->validate([
-        //    'branch' => 'required|string|exists:branches,name',
-        //]);
-
-        //$branchId = $request->branch; // Assume branch_id is passed in the request
-
         // Attach the branch to the user
         $user->branches()->sync($request->branch);
 
