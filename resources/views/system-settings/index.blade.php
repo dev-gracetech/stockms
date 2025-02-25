@@ -50,7 +50,7 @@
                                 @endif --}}
                             </div>
                             <div class="card-body">
-                                <form action="{{ route('system-settings.update-data') }}">
+                                <form action="{{ route('system-settings.update-data') }}" method="POST">
                                     @csrf
                                     <div class="form-group">
                                         <label for="company_name">Company Name</label>

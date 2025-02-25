@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
     //Route::prefix('system-settings')->group(function () {
         Route::resource('system-settings', SystemSettingController::class);
         //Route::get('/', [SystemSettingController::class, 'index'])->name('system-settings.index');
-        Route::post('system-settings/update', [SystemSettingController::class, 'updateData'])->name('system-settings.update-data');
+        Route::post('system-settings', [SystemSettingController::class, 'updateData'])->name('system-settings.update-data');
         Route::post('system-settings/logo', [SystemSettingController::class, 'updateLogo'])->name('update-logo');
         Route::post('system-settings/{settings}/remove-logo', [SystemSettingController::class, 'removeLogo'])->name('remove-logo');
     //});
