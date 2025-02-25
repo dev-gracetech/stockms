@@ -67,16 +67,20 @@
                             </div>
                         </div>
                     </div>
+                    @can('warehouse_manage')
                     <div class="tab-pane fade" id="v-pills-warehouses" role="tabpanel" aria-labelledby="v-pills-warehouses-tab">
                         <h3>List Of Warehouses</h3>
                         <p class="text-subtitle text-muted">Manage your warehouses here.</p>
                         @include('system-settings.warehouse')
                     </div>
+                    @endcan
+                    @can('branch_manage')
                     <div class="tab-pane fade" id="v-pills-branches" role="tabpanel" aria-labelledby="v-pills-branches-tab">
                         <h3>List Of Branches</h3>
                         <p class="text-subtitle text-muted">Manage your branches here.</p>
                         @include('system-settings.branch')
                     </div>
+                    @endcan
                 </div>
             </div>
         </div>

@@ -12,11 +12,13 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    @can('system_setting_manage')
                     <li class="nav-item">
                         <a class="nav-link active" href="{{ route('system-settings.index') }}" title="Settings">
                             <i class='bi bi-gear bi-sub fs-4 text-gray-600'></i>
                         </a>
                     </li>
+                    @endcan
                     <li class="nav-item dropdown me-1">
                         <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown"
                             aria-expanded="false">

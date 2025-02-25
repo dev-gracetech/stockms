@@ -17,7 +17,7 @@ class StockRequestController extends Controller
     public function index()
     {
         $user = auth()->user();
-        if ($user->hasRole('admin') or $user->hasRole('warehouse_manager')) {
+        if ($user->hasRole('admin') or $user->hasRole('warehouse manager')) {
             $stockRequests = StockRequest::with('branch', 'stock')
                                         ->orderBy('created_at', 'desc')
                                         ->get();

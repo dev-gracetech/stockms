@@ -52,6 +52,7 @@
                         @endcan
                     </ul>
                 </li>
+                @can('report_manage')
                 <li class="sidebar-item has-sub">
                     <a href="#" class='sidebar-link'>
                         <i class="bi bi-newspaper"></i>
@@ -72,6 +73,7 @@
                         </li>
                     </ul>
                 </li>
+                @endcan
                 @can('user_manage')
                 <li class="sidebar-item  has-sub">
                     <a href="#" class='sidebar-link'>
@@ -82,12 +84,16 @@
                         <li class="submenu-item">
                             <a href="{{route('users.index')}}" class="submenu-link">Users</a>
                         </li>
+                        @can('role_manage')
                         <li class="submenu-item">
                             <a href="{{route('roles.index')}}" class="submenu-link">Roles</a>
                         </li>
+                        @endcan
+                        @can('permission_manage')
                         <li class="submenu-item">
                             <a href="{{route('permissions.index')}}" class="submenu-link">Permissions</a>
                         </li>
+                        @endcan
                     </ul>
                 </li>
                 @endcan

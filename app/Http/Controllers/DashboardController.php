@@ -19,7 +19,7 @@ class DashboardController extends Controller
 
         // Get the authenticated user
         $user = auth()->user();
-        if ($user->hasRole('admin') or $user->hasRole('warehouse_manager'))
+        if ($user->hasRole('admin') or $user->hasRole('warehouse manager'))
         {
             $branchIds = Branch::all()->pluck('id');
             $branchNames = Branch::all()->pluck('name');
