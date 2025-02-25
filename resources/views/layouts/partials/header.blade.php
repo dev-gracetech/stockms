@@ -19,7 +19,7 @@
                         </a>
                     </li>
                     @endcan
-                    <li class="nav-item dropdown me-1">
+                    {{-- <li class="nav-item dropdown me-1">
                         <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             <i class='bi bi-envelope bi-sub fs-4 text-gray-600'></i>
@@ -30,7 +30,7 @@
                             </li>
                             <li><a class="dropdown-item" href="#">No new mail</a></li>
                         </ul>
-                    </li>
+                    </li> --}}
                     <li class="nav-item dropdown me-3">
                             <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown"
                             aria-expanded="false"><span class="badge bg-danger">{{count($notifications)}}</span>
@@ -59,8 +59,11 @@
                             </div>
                             <div class="user-img d-flex align-items-center">
                                 <div class="avatar avatar-md">
-                                    <img src="{{asset('assets/compiled/svg/favicon.svg')}}" alt="user" class="rounded-circle">
-                                    {{-- <img src="{{ Auth::user()->profile_photo_url }}"> --}}
+                                    @if(Auth::user()->photo)
+                                        <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="user" class="rounded-circle">
+                                    @else
+                                        <img src="{{ asset('images/user.png') }}" alt="user" class="rounded-circle">
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -69,15 +72,8 @@
                         <li>
                             <h6 class="dropdown-header">Hello, {{ strtok(Auth::user()->name, " ") }}!</h6>
                         </li>
-                        <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-person me-2"></i> My
+                        <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="icon-mid bi bi-person me-2"></i> My
                                 Profile</a></li>
-                       {{--  @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                        <li>
-                            <a class="dropdown-item" href="#"><i class="icon-mid bi bi-gear me-2"></i>
-                            {{ __('API Tokens') }}
-                            </a>
-                        </li>
-                        @endif --}}
                         <li>
                             <hr class="dropdown-divider">
                         </li>

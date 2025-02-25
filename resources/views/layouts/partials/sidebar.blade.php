@@ -3,8 +3,12 @@
         <div class="sidebar-header">
             <div class="d-flex justify-content-between">
                 <div class="logo">
-                    {{-- <a href="{{ route('home') }}"><img src="{{ asset('assets/compiled/svg/logo.svg')}}" alt="Logo" srcset=""></a> --}}
-                    <a href="#"><i class="bi bi-person-rolodex"></i>{{ __(' Stock')}}</a>
+                    @if(App\Models\SystemSetting::first()->company_logo)
+                        <img src="{{ asset('storage/' . App\Models\SystemSetting::first()->company_logo) }}" alt="Company Logo" class="img-fluid" style="width: 60px; height: 60px;">
+                    @else
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 60px; height: 60px;">
+                    @endif
+                    <a href="#"> {{ App\Models\SystemSetting::first()->company_name }}</a>
                 </div>
                 <div class="toggler">
                     <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>

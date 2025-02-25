@@ -18,6 +18,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\StockTransferController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\DashboardController;
@@ -59,10 +60,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/expiry-coming-stocks', [ReportController::class, 'expiryComingStocks'])->name('reports.expiry-coming-stocks');
 
     //System Settings
-    Route::prefix('system-settings')->group(function () {
-        Route::get('/', [SystemSettingController::class, 'index'])->name('system-settings.index');
-        Route::post('/update', [SystemSettingController::class, 'update'])->name('system-settings.update');
-    });
+    //Route::prefix('system-settings')->group(function () {
+        Route::resource('system-settings', SystemSettingController::class);
+        //Route::get('/', [SystemSettingController::class, 'index'])->name('system-settings.index');
+        Route::post('system-settings/update', [SystemSettingController::class, 'updateData'])->name('system-settings.update-data');
+        Route::post('system-settings/logo', [SystemSettingController::class, 'updateLogo'])->name('update-logo');
+        Route::post('system-settings/{settings}/remove-logo', [SystemSettingController::class, 'removeLogo'])->name('remove-logo');
+    //});
+
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.update-photo');
+    Route::delete('/profile/photo', [ProfileController::class, 'removePhoto'])->name('profile.remove-photo');
 });
 
 Route::middleware(['auth','can:user_manage'])->group(function () {
