@@ -4,8 +4,8 @@
 <div class="page-title">
     <div class="row">
         <div class="col-12 col-md-6 order-md-1 order-last">
-            <h3>List Of Stocks</h3>
-            <p class="text-subtitle text-muted">Manage your stocks here.</p>
+            <h3>List Of Products</h3>
+            <p class="text-subtitle text-muted">Manage your product stocks here.</p>
         </div>
     </div>
 </div>
@@ -17,7 +17,7 @@
             <div class="card-header">
                 <div class="col-md-6 m-2">
                     <button class="btn btn-primary" id="createStockBtn" data-bs-toggle="modal" data-bs-target="#createStockModal">
-                        <i class="bi bi-plus-circle"></i> Create New Stock</button>
+                        <i class="bi bi-plus-circle"></i> Create New Product</button>
                 </div>
             </div>
             <div class="card-body mt-3">
@@ -25,7 +25,7 @@
                     <table class="table datatable">
                         <thead>
                             <tr>
-                                <th>Name</th>
+                                <th>Product</th>
                                 <th>Quantity</th>
                                 <th>Batch Number</th>
                                 <th>Expiry Date</th>
@@ -44,6 +44,10 @@
                                     <td>{{ $stock->price }}</td>
                                     <td>{{ $stock->location }}</td>
                                     <td>
+                                        <button class="btn btn-warning btn-sm replenish-stock" data-id="{{ $stock->id }}" 
+                                            data-bs-toggle="modal" data-bs-target="#replenishStockModal" title="Add Stock">
+                                            <i class="bi bi-cart-plus"></i>
+                                        </button>
                                         <button class="btn btn-primary btn-sm edit-stock" data-id="{{ $stock->id }}" 
                                             data-bs-toggle="modal" data-bs-target="#editStockModal" title="Edit">
                                             <i class="bi bi-pencil-square"></i>
@@ -77,10 +81,10 @@
                         <label for="name">Product Name</label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="quantity">Quantity</label>
                         <input type="number" class="form-control" id="quantity" name="quantity" required min="1">
-                    </div>
+                    </div> --}}
                     <div class="mb-3">
                         <label for="batch">Batch Number</label>
                         <input type="text" class="form-control" id="batch" name="batch" required>
@@ -135,7 +139,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="edit_quantity">Quantity</label>
-                        <input type="number" class="form-control" id="edit_quantity" name="quantity" required min="1">
+                        <input type="number" class="form-control" id="edit_quantity" name="quantity" disabled>
                     </div>
                     <div class="mb-3">
                         <label for="edit_batch">Batch Number</label>
@@ -182,6 +186,36 @@
     </div>
 </div>
 @endsection
+
+<!-- Replenish Stock Modal -->
+<div class="modal fade" id="replenishStockModal" tabindex="-1" aria-labelledby="replenishStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="replenishStockModalLabel">Add Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="replenishStockForm">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="stock_id" id="stock_id">
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" name="quantity" id="quantity" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="source" class="form-label">Source</label>
+                        <input type="text" name="source" id="source" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section('custom-scripts')
 <script>
@@ -264,6 +298,28 @@
                 });
             });
         });
+
+        $('.replenish-stock').on('click', function() {
+            var stockId = $(this).data('id');
+            $('#stock_id').val(stockId);
+        });
+
+        $('#replenishStockForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('stocks.replenish') }}",
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    $('#replenishStockModal').modal('hide');
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function(response) {
+                    alert('Error: ' + response.responseJSON.message);
+                }
+            });
+        });
+
     });
 </script>
 @endsection

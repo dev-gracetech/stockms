@@ -1,18 +1,9 @@
 @extends('layouts.layout')
 
 @section('content')
-    <h1>Issued Stocks to Branches</h1>
-    <form action="{{ route('reports.issued-stocks') }}" method="GET" class="mb-3">
+    <h1>Current Stock Report</h1>
+    <form action="{{ route('reports.stock-track') }}" method="GET" class="mb-3">
         <div class="row">
-            <div class="col-md-3">
-                <label for="branch_id" class="form-label">Branch</label>
-                <select name="branch_id" id="branch_id" class="form-select">
-                    <option value="">All Branches</option>
-                    @foreach($branches as $branch)
-                        <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>{{ $branch->name }}</option>
-                    @endforeach
-                </select>
-            </div>
             <div class="col-md-3">
                 <label for="product_name" class="form-label">Product</label>
                 <select name="product_name" id="product_name" class="form-select">
@@ -35,24 +26,20 @@
             </div>
         </div>
     </form>
-    <table class="table datatable table-bordered">
+    <table class="table datatable">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Branch</th>
-                <th>Product</th>
+                <th>Product Name</th>
                 <th>Quantity</th>
-                <th>Type</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($stockMovements as $movement)
+            @foreach($results as $result)
                 <tr>
-                    <td>{{ $movement->created_at->format('Y-m-d H:i:s') }}</td>
-                    <td>{{ $movement->toBranch->name }}</td>
-                    <td>{{ $movement->stock->name }}</td>
-                    <td>{{ $movement->quantity }}</td>
-                    <td>{{ ucfirst($movement->movement_type) }}</td>
+                    <td>{{ $result->stock->name}}</td>
+                    <td>{{ $result->quantity_after }}</td>
+                    <td>{{ $result->created_at->format('Y-m-d') }}</td>
                 </tr>
             @endforeach
         </tbody>

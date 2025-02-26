@@ -8,6 +8,7 @@ use App\Models\Warehouse;
 use App\Models\Branch;
 use App\Models\User;
 use App\Models\StockMovement;
+use App\Models\BranchInventory;
 use App\Notifications\StockRequestNotification;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,7 @@ class StockRequestController extends Controller
     public function index()
     {
         $user = auth()->user();
+        $user_branch_id=1;
         if ($user->hasRole('admin') or $user->hasRole('warehouse manager')) {
             $stockRequests = StockRequest::with('branch', 'stock')
                                         ->orderBy('created_at', 'desc')
@@ -27,12 +29,13 @@ class StockRequestController extends Controller
                                         ->where('branch_id', $branch)
                                         ->orderBy('created_at', 'desc')
                                         ->get();
+            $user_branch_id = $branch->first();
         }
         
         $branches = Branch::all();
         $stocks = Stock::all();
         $notifications = auth()->user()->notifications;
-        return view('stock_requests.index', compact('stockRequests', 'branches', 'stocks','notifications'));
+        return view('stock_requests.index', compact('stockRequests', 'branches', 'user_branch_id', 'stocks','notifications'));
     }
 
     // Create a new stock request
@@ -61,6 +64,12 @@ class StockRequestController extends Controller
         $request = StockRequest::findOrFail($id);
         $stock = Stock::findOrFail($request->stock_id);
 
+
+        // Check if the warehouse has enough stock
+        if ($stock->quantity < $request->quantity_requested) {
+            return redirect()->back()->with('error', 'Insufficient stock in the warehouse.');
+        }
+
         if ($stock->quantity >= $request->quantity_requested) {
             // Deduct stock from warehouse
             $stock->quantity -= $request->quantity_requested;
@@ -74,6 +83,15 @@ class StockRequestController extends Controller
                 'quantity' => $request->quantity_requested,
                 'movement_type' => 'issue',
             ]);
+
+            // Add stock to the branch inventory
+            $branchInventory = BranchInventory::firstOrCreate([
+                'branch_id' => $request->branch_id,
+                'stock_id' => $request->stock_id,
+            ], ['quantity' => 0]);
+
+            $branchInventory->quantity += $request->quantity_requested;
+            $branchInventory->save();
 
             // Update request status
             $request->status = 'approved';

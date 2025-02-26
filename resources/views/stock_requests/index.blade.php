@@ -28,9 +28,11 @@
         <div class="card">
             <div class="card-header">
                 <div class="col-md-6">
+                    @can('stock_request')
                     <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#addStockRequestModal">
                         <i class="bi bi-plus-circle"></i> Request Stock
                     </button>
+                    @endcan
                 </div>
             </div>
             <div class="card-body mt-3">
@@ -41,7 +43,9 @@
                             <th>Branch</th>
                             <th>Quantity Requested</th>
                             <th>Status</th>
+                            @can('stock_request_actions')
                             <th>Actions</th>
+                            @endcan
                         </tr>
                     </thead>
                     <tbody>
@@ -59,9 +63,9 @@
                                         <span class="badge bg-danger">Rejected</span>
                                     @endif
                                 </td>
+                                @can('stock_request_actions')
                                 <td>
                                     @if($request->status === 'pending')
-                                        @haspermission('stock_request_issue')
                                         <form action="{{ route('stock-requests.approve', $request->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             <button type="submit" class="btn btn-success btn-sm" title="Approve"><i class="bi bi-check2-square"></i></i></button>
@@ -70,21 +74,15 @@
                                             @csrf
                                             <button type="submit" class="btn btn-danger btn-sm" title="Reject"><i class="bi bi-ban"></i></button>
                                         </form>
-                                        @endhaspermission
-                                        {{-- <a href="{{ route('stock-requests.edit', $request->id) }}" class="btn btn-primary btn-sm" title="Edit">
-                                            <i class="bi bi-pencil-square"></i></a> --}}
-                                        <button class="btn btn-primary btn-sm" onclick="editRequest({{ $request->id }})" title="Edit">
-                                            <i class="bi bi-pencil-square"></i></a></button>
+                            
+                                        {{-- <button class="btn btn-primary btn-sm" onclick="editRequest({{ $request->id }})" title="Edit">
+                                            <i class="bi bi-pencil-square"></i></a></button> --}}
 
                                         <button class="btn btn-danger btn-sm" onclick="deleteRequest({{ $request->id }})" title="Delete">
                                             <i class="bi bi-trash"></i></button>
-                                        {{-- <form action="{{ route('stock-requests.destroy', $request->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="bi bi-trash"></i></button>
-                                        </form> --}}
                                     @endif
                                 </td>
+                                @endcan
                             </tr>
                         @endforeach
                     </tbody>
@@ -122,7 +120,8 @@
                         <label for="branch_id" class="form-label">Branch</label>
                         <select class="form-select" id="branch_id" name="branch_id" required>
                             @foreach($branches as $branch)
-                                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            {{-- <option value="{{ $branch->id }}">{{ $branch->name }}</option> --}}
+                            <option value="{{ $branch->id }}" {{ $user_branch_id == $branch->id ? 'selected' : '' }}>{{ $branch->name }}</option>
                             @endforeach
                         </select>
                     </div>

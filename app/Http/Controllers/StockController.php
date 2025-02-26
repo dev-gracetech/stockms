@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Stock;
 use App\Models\Branch;
 use App\Models\Warehouse;
+use App\Models\Replenishment;
 use App\Models\SystemSetting as StockSetting;
 
 class StockController extends Controller
@@ -31,7 +32,7 @@ class StockController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'batch' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
+            //'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'expiry_date' => 'required|date',
             'location' => 'required|string|max:255',
@@ -81,5 +82,34 @@ class StockController extends Controller
     {
         $stock->delete();
         return redirect()->route('stocks.index')->with('success', 'Stock deleted successfully.');
+    }
+
+    // Replenish stock
+    public function replenish(Request $request)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'source' => 'nullable|string|max:255',
+        ]);
+
+        // Add stock to the warehouse
+        $quantity_after;
+        $stock = Stock::findOrFail($request->stock_id);
+        $quantity_before = $stock->quantity;
+        $quantity_after = $quantity_before + $request->quantity;
+        $stock->quantity += $request->quantity;
+        $stock->save();
+
+        // Record the replenishment
+        Replenishment::create([
+            'warehouse_id' => $stock->warehouse_id,
+            'stock_id' => $request->stock_id,
+            'quantity_added' => $request->quantity,
+            'quantity_before' => $quantity_before,
+            'quantity_after' => $quantity_after,
+            'source' => $request->source,
+        ]);
+
+        return redirect()->back()->with('success', 'Stock replenished successfully.');
     }
 }

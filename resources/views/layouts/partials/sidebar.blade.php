@@ -38,7 +38,7 @@
                         @endcan
                         @can('branch_menu_access')
                         <li class="submenu-item">
-                            <a href="{{route('stock-movements.index')}}" class="submenu-link">Branch Stock</a>
+                            <a href="{{route('branches.inventory')}}" class="submenu-link">Branch Stock</a>
                         </li>
                         @endcan
                         <li class="submenu-item">
@@ -74,6 +74,9 @@
                         </li>
                         <li class="submenu-item">
                             <a href="{{route('reports.expiry-coming-stocks')}}" class="submenu-link">Expiry Coming Stocks</a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="{{route('reports.stock-track')}}" class="submenu-link">Stocks Updates</a>
                         </li>
                     </ul>
                 </li>

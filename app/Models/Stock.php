@@ -33,4 +33,10 @@ class Stock extends Model
     {
         return $this->hasMany(StockMovement::class);
     }
+
+    // Relationship with Replenishments
+    public function replenishments()
+    {
+        return $this->hasMany(Replenishment::class);
+    }
 }

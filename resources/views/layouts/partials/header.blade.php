@@ -33,14 +33,14 @@
                     </li> --}}
                     <li class="nav-item dropdown me-3">
                             <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                            aria-expanded="false"><span class="badge bg-danger">{{count($notifications)}}</span>
+                            aria-expanded="false"><span class="badge bg-danger">{{count(Auth::user()->notifications)}}</span>
                             <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                             <li>
                                 <h6 class="dropdown-header">Notifications</h6>
                             </li>
-                            @forelse($notifications as $notification)
+                            @forelse(Auth::user()->notifications as $notification)
                                 <li>
                                     <small><a class="dropdown-item">{{ $notification->data['message'] }} {{ $notification->created_at->diffForHumans() }}</a></small>
                                 </li>

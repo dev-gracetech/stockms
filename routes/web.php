@@ -37,9 +37,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     Route::resource('stocks', StockController::class);
-    Route::get('stocks/{stock}/edit-data', [StockController::class, 'editData'])->name('warehouses.edit-data');
+    Route::get('stocks/{stock}/edit-data', [StockController::class, 'editData'])->name('stocks.edit-data');
+    Route::post('stocks/replenish', [StockController::class, 'replenish'])->name('stocks.replenish');
+
     Route::resource('branches', BranchController::class);
     Route::get('branches/{branch}/edit-data', [BranchController::class, 'editData'])->name('branches.edit-data');
+    Route::get('/inventory', [BranchController::class, 'inventory'])->name('branches.inventory');
+
     Route::resource('warehouses', WarehouseController::class);
     Route::get('warehouses/{warehouse}/edit-data', [WarehouseController::class, 'editData'])->name('warehouses.edit-data');
 
@@ -57,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/issued-stocks', [ReportController::class, 'issuedStocks'])->name('reports.issued-stocks');
     Route::get('/reports/branch-stock', [ReportController::class, 'branchStock'])->name('reports.branch-stock');
     Route::get('/reports/stock-details', [ReportController::class, 'stockDetails'])->name('reports.stock-details');
+    Route::get('/reports/stock-track', [ReportController::class, 'stockTracking'])->name('reports.stock-track');
     Route::get('/reports/expiry-coming-stocks', [ReportController::class, 'expiryComingStocks'])->name('reports.expiry-coming-stocks');
 
     //System Settings

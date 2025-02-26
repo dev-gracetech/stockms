@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\StockTransfer;
+use App\Models\StockMovement;
+use App\Models\BranchInventory;
+use App\Models\Replenishment;
 use App\Models\Stock;
 use App\Models\Branch;
 use App\Models\SystemSetting;
@@ -14,34 +17,55 @@ class ReportController extends Controller
     // Show issued stocks to branches
     public function issuedStocks(Request $request)
     {
-        $query = StockTransfer::with(['stock', 'fromBranch', 'toBranch'])
-            ->where('status', 'approved');
+        $query = StockMovement::query();
+
+        // Filter by branch
+        if ($request->branch_id) {
+            $query->where('to_branch_id', $request->branch_id);
+        }
+
+        // Filter by product
+        if ($request->product_name) {
+            $query->whereHas('stock', function ($q) use ($request) {
+                $q->where('name', $request->product_name);
+            });
+        }
 
         // Filter by date range
         if ($request->start_date && $request->end_date) {
-            $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->start_date)->startOfDay(),
+                Carbon::parse($request->end_date)->endOfDay(),
+            ]);
         }
 
-        $issuedStocks = $query->get();
+        // Fetch the filtered stock movements
+        $stockMovements = $query->with(['stock', 'toBranch'])->get();
 
-        $notifications = auth()->user()->notifications;
-        return view('reports.issued_stocks', compact('issuedStocks', 'notifications'));
+        return view('reports.issued_stocks', [
+            'branches' => Branch::all(),
+            'products' => Stock::distinct('name')->pluck('name'),
+            'stockMovements' => $stockMovements,
+            'filters' => $request->all(),
+        ]);
     }
 
     // Show branch stock details
     public function branchStock(Request $request)
     {
-        $query = Branch::with('stocks');
+        $query = BranchInventory::query();
 
         // Filter by branch
         if ($request->branch) {
-            $query->where('id', $request->branch);
+            $query->where('branch_id', $request->branch_id);
         }
 
-        $branches = $query->get();
+        $results = $query->get();
+        $branches = Branch::all();
+        $filters = $request->all();
         
-        $notifications = auth()->user()->notifications;
-        return view('reports.branch_stock', compact('branches', 'notifications'));
+        //$notifications = auth()->user()->notifications;
+        return view('reports.branch_stock', compact('branches','results','filters'));
     }
 
     // Show stock details with overstock, less stock, and expiry alerts
@@ -108,4 +132,29 @@ class ReportController extends Controller
         return view('reports.expiry_coming_stocks', compact('stocks', 'expiryAlertDays', 'notifications'));
     }
     
+    public function stockTracking(Request $request)
+    {
+        $query = Replenishment::query();
+
+        // Filter by product
+        if ($request->product_name) {
+            $query->whereHas('stock', function ($q) use ($request) {
+                $q->where('name', $request->product_name);
+            });
+        }
+
+        // Filter by date range
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->start_date)->startOfDay(),
+                Carbon::parse($request->end_date)->endOfDay(),
+            ]);
+        }
+        
+        $results = $query->get();
+        $filters = $request->all();
+        $products = Stock::distinct('name')->pluck('name');
+
+        return view('reports.track_stock', compact('results','filters','products'));
+    }
 }

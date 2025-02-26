@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Branch;
+use App\Models\BranchInventory;
 
 class BranchController extends Controller
 {
@@ -14,6 +15,14 @@ class BranchController extends Controller
         //$branches = Branch::with('stocks')->get();
         $notifications = auth()->user()->notifications;
         return view('branches.index', compact('branches','notifications'));
+    }
+
+    // Show the inventory of a branch
+    public function inventory()
+    {
+        $branch = auth()->user()->branches->pluck('id');
+        $stocks = BranchInventory::where('branch_id', $branch)->get();
+        return view('branches.stock-list', compact('branch','stocks'));
     }
 
     // Show the create branch form

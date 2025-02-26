@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Stock;
 use App\Models\Branch;
 use App\Models\StockMovement;
+use App\Models\SystemSetting;
+use App\Models\BranchInventory;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -16,6 +18,7 @@ class DashboardController extends Controller
     {
         // Fetch data for charts
         $stocks = Stock::all();
+        $settings = SystemSetting::first();
 
         // Get the authenticated user
         $user = auth()->user();
@@ -31,11 +34,12 @@ class DashboardController extends Controller
             $branchIds = $user->branches->pluck('id');
             $branchNames = $user->branches->pluck('name');
             $branches = $user->branches;
-            $distinctStockIds = DB::table('stock_movements')
+            $distinctStockIds = BranchInventory::all()->pluck('stock_id');
+            /* $distinctStockIds = DB::table('stock_movements')
             ->select('stock_id')
             ->whereIn('to_branch_id', $branchIds)
             ->distinct()
-            ->pluck('stock_id');
+            ->pluck('stock_id'); */
 
             $stocks = Stock::whereIn('id',$distinctStockIds)->get();
         }
@@ -43,8 +47,17 @@ class DashboardController extends Controller
         // Calculate total quantity per branch
         $branchQuantities = [];
 
-        foreach ($branches as $branch) {
+        /* foreach ($branches as $branch) {
             $totalQuantity = StockMovement::where('to_branch_id', $branch->id)
+                ->sum('quantity');
+            $branchQuantities[] = [
+                'branch_name' => $branch->name,
+                'total_quantity' => $totalQuantity,
+            ];
+        } */
+
+        foreach ($branches as $branch) {
+            $totalQuantity = BranchInventory::where('branch_id', $branch->id)
                 ->sum('quantity');
             $branchQuantities[] = [
                 'branch_name' => $branch->name,
@@ -53,11 +66,11 @@ class DashboardController extends Controller
         }
 
         $expiryStocks = $stocks->filter(function ($stock) {
-            return Carbon::parse($stock->expiry_date)->diffInDays(Carbon::now()) <= 30;
+            return Carbon::parse($stock->expiry_date)->diffInDays(Carbon::now()) <= SystemSetting::first()->expiry_alert_days;
         });
 
-        $overstockThreshold = 100;
-        $lessStockThreshold = 10;
+        $overstockThreshold = $settings->high_stock_threshold;
+        $lessStockThreshold = $settings->low_stock_threshold;
 
         $overstockCount = $stocks->filter(function ($stock) use ($overstockThreshold) {
             return $stock->quantity > $overstockThreshold;

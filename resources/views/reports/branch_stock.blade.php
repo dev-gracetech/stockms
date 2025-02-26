@@ -27,14 +27,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($branches as $branch)
-                @foreach($branch->stocks as $stock)
-                    <tr>
-                        <td>{{ $branch->name }}</td>
-                        <td>{{ $stock->name }}</td>
-                        <td>{{ $stock->pivot->quantity }}</td>
-                    </tr>
-                @endforeach
+            @foreach($results as $result)
+                <tr>
+                    <td>{{ $result->branch->name}}</td>
+                    <td>{{ $result->stock->name}}</td>
+                    <td>{{ $result->quantity }}</td>
+                </tr>
             @endforeach
         </tbody>
     </table>
