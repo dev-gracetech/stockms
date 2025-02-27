@@ -20,10 +20,14 @@
                 <div class="nav flex-column nav-pills me-5" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <button class="nav-link active" id="v-pills-general-tab" data-bs-toggle="pill" data-bs-target="#v-pills-general" 
                         type="button" role="tab" aria-controls="v-pills-general" aria-selected="true">General Settings</button>
+                    @can('warehouse_manage')
                     <button class="nav-link" id="v-pills-warehouses-tab" data-bs-toggle="pill" data-bs-target="#v-pills-warehouses" 
                         type="button" role="tab" aria-controls="v-pills-warehouses" aria-selected="false">Warehouses</button>
+                    @endcan
+                    @can('branch_manage')
                     <button class="nav-link" id="v-pills-branches-tab" data-bs-toggle="pill" data-bs-target="#v-pills-branches" 
                         type="button" role="tab" aria-controls="v-pills-branches" aria-selected="false">Branches</button>
+                    @endcan
                 </div>
                 <div class="tab-content col-6" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-general" role="tabpanel" aria-labelledby="v-pills-general-tab">

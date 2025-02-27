@@ -26,18 +26,22 @@
             </div>
         </div>
     </form>
-    <table class="table datatable">
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Product Name</th>
+                <th>Batch Number</th>
+                <th>Price</th>
                 <th>Quantity</th>
-                <th>Date</th>
+                <th>Date Updated</th>
             </tr>
         </thead>
         <tbody>
             @foreach($results as $result)
                 <tr>
                     <td>{{ $result->stock->name}}</td>
+                    <td>{{ $result->stock->batch}}</td>
+                    <td>{{ $result->stock->price}}</td>
                     <td>{{ $result->quantity_after }}</td>
                     <td>{{ $result->created_at->format('Y-m-d') }}</td>
                 </tr>
