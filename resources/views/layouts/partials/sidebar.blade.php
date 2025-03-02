@@ -40,6 +40,9 @@
                         <li class="submenu-item">
                             <a href="{{route('branches.inventory')}}" class="submenu-link">Branch Stock</a>
                         </li>
+                        <li class="submenu-item">
+                            <a href="{{route('branch-stock.track')}}" class="submenu-link">Dispensed Stock</a>
+                        </li>
                         @endcan
                         <li class="submenu-item">
                             <a href="{{route('stock-requests.index')}}" class="submenu-link">Stock Requests</a>

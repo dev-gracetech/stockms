@@ -34,6 +34,7 @@ class StockController extends Controller
             'batch' => 'required|string|max:255',
             //'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
             'expiry_date' => 'required|date',
             'location' => 'required|string|max:255',
             'warehouse_id' => 'required|exists:warehouses,id',
@@ -65,10 +66,10 @@ class StockController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'batch' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
             'expiry_date' => 'required|date',
             'location' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
         ]);
 
         $stock = Stock::findOrFail($id);

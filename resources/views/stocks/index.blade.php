@@ -29,7 +29,8 @@
                                 <th>Quantity</th>
                                 <th>Batch Number</th>
                                 <th>Expiry Date</th>
-                                <th>Price</th>
+                                <th>Buying Price</th>
+                                <th>Selling Price</th>
                                 <th>Location</th>
                                 <th>Actions</th>
                             </tr>
@@ -42,6 +43,7 @@
                                     <td>{{ $stock->batch }}</td>
                                     <td>{{ $stock->expiry_date }}</td>
                                     <td>{{ $stock->price }}</td>
+                                    <td>{{ $stock->selling_price }}</td>
                                     <td>{{ $stock->location }}</td>
                                     <td>
                                         <button class="btn btn-warning btn-sm replenish-stock" data-id="{{ $stock->id }}" 
@@ -90,8 +92,12 @@
                         <input type="text" class="form-control" id="batch" name="batch" required>
                     </div>
                     <div class="mb-3">
-                        <label for="price">Price</label>
+                        <label for="price">Buying Price</label>
                         <input type="number" step="0.01" name="price" class="form-control" value="0.00">
+                    </div>
+                    <div class="mb-3">
+                        <label for="selling_price">Selling Price</label>
+                        <input type="number" step="0.01" name="selling_price" class="form-control" value="0.00">
                     </div>
                     <div class="mb-3">
                         <label for="expiry_date">Expiry Date</label>
@@ -146,8 +152,12 @@
                         <input type="text" class="form-control" id="edit_batch" name="batch" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_price">Price</label>
+                        <label for="edit_price">Buying Price</label>
                         <input type="number" step="0.01" name="price" id="edit_price" class="form-control" value="0.00">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_selling_price">Selling Price</label>
+                        <input type="number" step="0.01" name="selling_price" id="edit_selling_price" class="form-control" value="0.00">
                     </div>
                     <div class="mb-3">
                         <label for="expiry_date">Expiry Date</label>
@@ -256,6 +266,7 @@
                     $('#edit_quantity').val(response.stock.quantity);
                     $('#edit_batch').val(response.stock.batch);
                     $('#edit_price').val(response.stock.price);
+                    $('#edit_selling_price').val(response.stock.selling_price);
                     $('#edit_expiry_date').val(response.stock.expiry_date); 
                     $('#edit_location').val(response.stock.location);
                     $('#editStockModal').modal('show');

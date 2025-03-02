@@ -13,7 +13,9 @@ class StockMovementController extends Controller
         $user = auth()->user();
         $notifications = $user->notifications;
         
-        $movements = StockMovement::with(['stock', 'fromWarehouse', 'toBranch'])->get();
+        $movements = StockMovement::with(['stock', 'fromWarehouse', 'toBranch'])
+        ->where('movement_type','issue')
+        ->get();
         return view('stock-movements.index', compact('movements', 'notifications'));
 
     }

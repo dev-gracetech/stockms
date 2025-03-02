@@ -1,7 +1,9 @@
 @extends('layouts.layout')
 
 @section('content')
-    <h1>Branch Stock Report</h1>
+<div id="printable-area">
+    <h1 id="report-title">Branch Stock Report</h1>
+    <div class="no-print">
     <form action="{{ route('reports.branch-stock') }}" method="GET" class="mb-3">
         <div class="row">
             <div class="col-md-3">
@@ -15,9 +17,11 @@
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-primary mt-4">Filter</button>
+                <button onclick="printReport()" class="btn btn-info mt-4">Print Report</button>
             </div>
         </div>
     </form>
+    </div>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -40,4 +44,5 @@
             @endforeach
         </tbody>
     </table>
+</div>
 @endsection

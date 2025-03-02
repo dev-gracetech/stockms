@@ -20,9 +20,18 @@ class BranchController extends Controller
     // Show the inventory of a branch
     public function inventory()
     {
-        $branch = auth()->user()->branches->pluck('id');
-        $stocks = BranchInventory::where('branch_id', $branch)->get();
-        return view('branches.stock-list', compact('branch','stocks'));
+        $user = auth()->user();
+        if($user->hasrole('admin'))
+        {
+            $stocks = BranchInventory::all();
+        }
+        else
+        {
+            $branch = $user->branches->pluck('id');
+            $stocks = BranchInventory::where('branch_id', $branch)->get();
+        }
+        
+        return view('branches.stock-list', compact('stocks'));
     }
 
     // Show the create branch form

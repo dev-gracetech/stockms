@@ -22,3 +22,10 @@
 <link rel="stylesheet" href="{{ mix('css/app-dark.css') }}"> --}}
 {{-- @vite(["resources/sass/bootstrap.scss", "resources/sass/pages/auth.scss", "resources/sass/app.scss"]) --}}
 @vite(["resources/sass/app.scss"])
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>

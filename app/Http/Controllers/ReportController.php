@@ -40,7 +40,7 @@ class ReportController extends Controller
         }
 
         // Fetch the filtered stock movements
-        $stockMovements = $query->with(['stock', 'toBranch'])->get();
+        $stockMovements = $query->with(['stock', 'toBranch'])->where('movement_type','issue')->get();
 
         return view('reports.issued_stocks', [
             'branches' => Branch::all(),
@@ -72,7 +72,8 @@ class ReportController extends Controller
     public function stockDetails(Request $request)
     {
         // Fetch all stocks with their branch quantities
-        $stocks = Stock::with('branches')->get();
+        $stocks = Stock::all();
+        //$stocks = BranchInventory::with('stocks')->get();
 
         $settings = SystemSetting::first();
         $overstockThreshold = $settings->high_stock_threshold;
@@ -87,11 +88,13 @@ class ReportController extends Controller
         // Calculate total quantity, overstock, less stock, and expiry alerts
         $stocks->each(function ($stock) use ($overstockThreshold, $lessStockThreshold, $expiryAlertDays) {
             // Calculate total quantity across all branches
-            $stock->total_quantity = $stock->branches->sum('pivot.quantity');
+            //$stock->total_quantity = $stock->branches->sum('pivot.quantity');
 
             // Determine overstock and less stock
-            $stock->is_overstock = $stock->total_quantity > $overstockThreshold;
-            $stock->is_less_stock = $stock->total_quantity < $lessStockThreshold;
+            //$stock->is_overstock = $stock->total_quantity > $overstockThreshold;
+            //$stock->is_less_stock = $stock->total_quantity < $lessStockThreshold;
+            $stock->is_overstock = $stock->quantity > $overstockThreshold;
+            $stock->is_less_stock = $stock->quantity < $lessStockThreshold;
 
             // Determine if the stock is nearing expiry
             $stock->is_near_expiry = Carbon::parse($stock->expiry_date)->diffInDays(Carbon::now()) <= $expiryAlertDays;
@@ -150,7 +153,7 @@ class ReportController extends Controller
                 Carbon::parse($request->end_date)->endOfDay(),
             ]);
         }
-        
+
         $results = $query->get();
         $filters = $request->all();
         $products = Stock::distinct('name')->pluck('name');

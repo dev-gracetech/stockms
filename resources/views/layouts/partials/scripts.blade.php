@@ -17,4 +17,45 @@
     $(document).ready(function() {
         $('.datatable').DataTable();
     });
+
+    function printReport() {
+        // Hide unnecessary elements
+        const elementsToHide = document.querySelectorAll('.no-print');
+        elementsToHide.forEach(element => {
+            element.style.display = 'none';
+        });
+
+        // Get the main content to print
+        const printContent = document.getElementById('printable-area').innerHTML;
+        const printTitle = document.getElementById('report-title').innerHTML;
+
+        // Open a new window and write the content
+        const printWindow = window.open('', '', 'height=600,width=800');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>${printTitle}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        .no-print { display: none; }
+                    </style>
+                </head>
+                <body>
+                    ${printContent}
+                </body>
+            </html>
+        `);
+
+        // Print the content
+        printWindow.document.close();
+        printWindow.print();
+
+        // Restore the original layout
+        elementsToHide.forEach(element => {
+            element.style.display = '';
+        });
+    }
 </script>

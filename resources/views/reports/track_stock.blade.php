@@ -1,7 +1,9 @@
 @extends('layouts.layout')
 
 @section('content')
-    <h1>Current Stock Report</h1>
+<div id="printable-area">
+    <h1 id="report-title">Current Stock Report</h1>
+    <div class="no-print">
     <form action="{{ route('reports.stock-track') }}" method="GET" class="mb-3">
         <div class="row">
             <div class="col-md-3">
@@ -23,15 +25,18 @@
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-primary mt-4">Filter</button>
+                <button onclick="printReport()" class="btn btn-info mt-4">Print Report</button>
             </div>
         </div>
     </form>
+    </div>
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Product Name</th>
                 <th>Batch Number</th>
-                <th>Price</th>
+                <th>Buying Price</th>
+                <th>Selling Price</th>
                 <th>Quantity</th>
                 <th>Date Updated</th>
             </tr>
@@ -42,10 +47,12 @@
                     <td>{{ $result->stock->name}}</td>
                     <td>{{ $result->stock->batch}}</td>
                     <td>{{ $result->stock->price}}</td>
+                    <td>{{ $result->stock->selling_price}}</td>
                     <td>{{ $result->quantity_after }}</td>
                     <td>{{ $result->created_at->format('Y-m-d') }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+</div>
 @endsection

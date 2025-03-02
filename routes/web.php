@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\BranchStockController;
 use App\Http\Controllers\StockTransferController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
@@ -43,6 +44,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('branches', BranchController::class);
     Route::get('branches/{branch}/edit-data', [BranchController::class, 'editData'])->name('branches.edit-data');
     Route::get('/inventory', [BranchController::class, 'inventory'])->name('branches.inventory');
+    //Route::get('/branch-stock/dispense', [BranchStockController::class, 'dispenseForm'])->name('branch-stock.dispense');
+    Route::post('/branch-stock/dispense', [BranchStockController::class, 'dispense'])->name('branch-stock.dispense.submit');
+    Route::get('/branch-stock/track', [BranchStockController::class, 'track'])->name('branch-stock.track');
 
     Route::resource('warehouses', WarehouseController::class);
     Route::get('warehouses/{warehouse}/edit-data', [WarehouseController::class, 'editData'])->name('warehouses.edit-data');
