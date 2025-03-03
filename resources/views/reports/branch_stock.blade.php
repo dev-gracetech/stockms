@@ -26,8 +26,7 @@
         <thead>
             <tr>
                 <th>Branch Name</th>
-                <th>Stock Name</th>
-                <th>Batch Number</th>
+                <th>Product</th>
                 <th>Expiry Date</th>
                 <th>Quantity</th>
             </tr>
@@ -36,8 +35,7 @@
             @foreach($results as $result)
                 <tr>
                     <td>{{ $result->branch->name}}</td>
-                    <td>{{ $result->stock->name}}</td>
-                    <td>{{ $result->stock->batch}}</td>
+                    <td>{{ $result->stock->name}} ({{ $result->stock->batch}})</td>
                     <td>{{ $result->stock->expiry_date }}</td>
                     <td>{{ $result->quantity }}</td>
                 </tr>

@@ -45,6 +45,7 @@
                 <th>Date</th>
                 <th>Branch</th>
                 <th>Product</th>
+                <th>Batch Number</th>
                 <th>Quantity</th>
                 <th>Type</th>
             </tr>
@@ -55,6 +56,7 @@
                     <td>{{ $movement->created_at->format('Y-m-d H:i:s') }}</td>
                     <td>{{ $movement->toBranch->name }}</td>
                     <td>{{ $movement->stock->name }}</td>
+                    <td>{{ $movement->stock->batch }}</td>
                     <td>{{ $movement->quantity }}</td>
                     <td>{{ ucfirst($movement->movement_type) }}</td>
                 </tr>

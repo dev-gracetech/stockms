@@ -33,7 +33,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Product Name</th>
+                <th>Product</th>
                 <th>Batch Number</th>
                 <th>Buying Price</th>
                 <th>Selling Price</th>

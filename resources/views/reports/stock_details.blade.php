@@ -13,7 +13,7 @@
                     <option value="overstock" {{ request('status') == 'overstock' ? 'selected' : '' }}>Overstock</option>
                     <option value="less_stock" {{ request('status') == 'less_stock' ? 'selected' : '' }}>Less Stock</option>
                     <option value="near_expiry" {{ request('status') == 'near_expiry' ? 'selected' : '' }}>Near Expiry</option>
-                    <option value="is_expired" {{ request('status') == 'is_expired' ? 'selected' : '' }}>Expired</option>
+                    <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
                 </select>
             </div>
             <div class="col-md-3">
@@ -26,7 +26,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Stock Name</th>
+                <th>Product</th>
                 <th>Total Quantity</th>
                 <th>Expiry Date</th>
                 <th>Status</th>
@@ -35,7 +35,7 @@
         <tbody>
             @foreach($stocks as $stock)
                 <tr>
-                    <td>{{ $stock->name }}</td>
+                    <td>{{ $stock->name }} ({{$stock->batch}})</td>
                     <td>{{ $stock->quantity }}</td>
                     <td>{{ $stock->expiry_date }}</td>
                     <td>
