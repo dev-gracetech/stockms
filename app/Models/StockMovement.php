@@ -17,6 +17,7 @@ class StockMovement extends Model
         'movement_type',
         'from_branch_id',
         'dispensed_to',
+        'notes',
     ];
 
     // Relationship with Stock

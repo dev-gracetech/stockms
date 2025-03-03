@@ -26,6 +26,7 @@ class BranchStockController extends Controller
             'stock_id' => 'required|exists:stocks,id',
             'quantity' => 'required|integer|min:1',
             'dispensed_to' => 'required|string|max:255',
+            'notes' => 'nullable|string',
         ]);
 
         $stock = BranchInventory::findOrFail($request->stock_id);
@@ -47,6 +48,7 @@ class BranchStockController extends Controller
             'quantity' => $request->quantity,
             'dispensed_to' => $request->dispensed_to,
             'movement_type' => 'dispense',
+            'notes' => $request->notes,
         ]);
 
         return redirect()->route('branch-stock.track')->with('success', 'Stock dispensed successfully.');

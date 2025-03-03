@@ -7,6 +7,7 @@ use App\Models\Stock;
 use App\Models\Branch;
 use App\Models\Warehouse;
 use App\Models\Replenishment;
+use App\Models\Disposal;
 use App\Models\SystemSetting as StockSetting;
 
 class StockController extends Controller
@@ -14,7 +15,7 @@ class StockController extends Controller
     // List all stocks
     public function index()
     {
-        $stocks = Stock::with('warehouse')->get();
+        $stocks = Stock::with('warehouse')->where('status','active')->get();
         $warehouses = Warehouse::all();
         $notifications = auth()->user()->notifications;
         return view('stocks.index', compact('stocks', 'warehouses', 'notifications'));
@@ -112,5 +113,31 @@ class StockController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Stock replenished successfully.');
+    }
+
+    // Dispose stock
+    public function dispose(Request $request, Stock $stock)
+    {
+        $request->validate([
+            'notes' => 'nullable|string',
+        ]);
+
+        // Remove stock from the warehouse
+        $quantity_before = $stock->quantity;
+        $stock->quantity = 0;
+        $stock->status = 'disposed';
+        $stock->save();
+
+        // Record the disposal
+        Disposal::create([
+            'warehouse_id' => $stock->warehouse_id,
+            //'branch_id' => $stock->branch_id,
+            'stock_id' => $stock->id,
+            'quantity_before' => $quantity_before,
+            'quantity_disposed' => $stock->quantity,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->back()->with('success', 'Stock disposed successfully.');
     }
 }

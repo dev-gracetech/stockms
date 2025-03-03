@@ -23,7 +23,8 @@
                                 <th>Quantity</th>
                                 <th>Batch Number</th>
                                 <th>Expiry Date</th>
-                                <th>Price</th>
+                                <th>Buying Price</th>
+                                <th>Selling Price</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -35,6 +36,7 @@
                                     <td>{{ $stock->stock->batch }}</td>
                                     <td>{{ $stock->stock->expiry_date }}</td>
                                     <td>{{ $stock->stock->price }}</td>
+                                    <td>{{ $stock->stock->selling_price }}</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" 
                                         data-bs-target="#dispenseFormModal" onclick="openDispenseModal({{ $stock->stock_id }})" title="Dispense">
@@ -70,6 +72,10 @@
                     <div class="mb-3">
                         <label for="dispensed_to" class="form-label">Dispensed To</label>
                         <input type="text" name="dispensed_to" id="dispensed_to" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea name="notes" id="notes" class="form-control"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Dispense</button>
                 </form>

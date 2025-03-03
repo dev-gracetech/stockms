@@ -13,6 +13,7 @@
                     <option value="overstock" {{ request('status') == 'overstock' ? 'selected' : '' }}>Overstock</option>
                     <option value="less_stock" {{ request('status') == 'less_stock' ? 'selected' : '' }}>Less Stock</option>
                     <option value="near_expiry" {{ request('status') == 'near_expiry' ? 'selected' : '' }}>Near Expiry</option>
+                    <option value="is_expired" {{ request('status') == 'is_expired' ? 'selected' : '' }}>Expired</option>
                 </select>
             </div>
             <div class="col-md-3">
@@ -48,6 +49,8 @@
 
                         @if($stock->is_near_expiry)
                             <span class="badge bg-danger">Near Expiry</span>
+                        @elseif($stock->is_expired)
+                            <span class="badge bg-danger">Expired</span>
                         @endif
                     </td>
                 </tr>

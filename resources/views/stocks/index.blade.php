@@ -50,6 +50,10 @@
                                             data-bs-toggle="modal" data-bs-target="#replenishStockModal" title="Add Stock">
                                             <i class="bi bi-cart-plus"></i>
                                         </button>
+                                        <button class="btn btn-warning btn-sm dispose-stock" data-id="{{ $stock->id }}" 
+                                            data-bs-toggle="modal" data-bs-target="#disposeStockModal" title="Dispose Stock">
+                                            <i class="bi bi-trash2"></i>
+                                        </button>
                                         <button class="btn btn-primary btn-sm edit-stock" data-id="{{ $stock->id }}" 
                                             data-bs-toggle="modal" data-bs-target="#editStockModal" title="Edit">
                                             <i class="bi bi-pencil-square"></i>
@@ -195,7 +199,6 @@
         </div>
     </div>
 </div>
-@endsection
 
 <!-- Replenish Stock Modal -->
 <div class="modal fade" id="replenishStockModal" tabindex="-1" aria-labelledby="replenishStockModalLabel" aria-hidden="true">
@@ -226,6 +229,33 @@
         </div>
     </div>
 </div>
+
+<!-- Dispose Stock Modal -->
+<div class="modal fade" id="disposeStockModal" tabindex="-1" aria-labelledby="disposeStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="disposeStockModalLabel">Dispose Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="disposeStockForm">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="stock_id" id="stock_id">
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea name="notes" id="notes" class="form-control" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
 
 @section('custom-scripts')
 <script>
@@ -323,6 +353,28 @@
                 data: $(this).serialize(),
                 success: function(response) {
                     $('#replenishStockModal').modal('hide');
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function(response) {
+                    alert('Error: ' + response.responseJSON.message);
+                }
+            });
+        });
+
+        $('.dispose-stock').on('click', function() {
+            var stockId = $(this).data('id');
+            $('#stock_id').val(stockId);
+        });
+
+        $('#disposeStockForm').on('submit', function(e) {
+            e.preventDefault();
+            var stockId = $('#stock_id').val();
+            $.ajax({
+                url: `/stocks/${stockId}/dispose`,
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    $('#disposeStockModal').modal('hide');
                     location.reload(); // Reload the page to reflect changes
                 },
                 error: function(response) {

@@ -78,7 +78,7 @@
                     </div>
                     <div class="form-group">
                         <label for="permissions">Permissions</label>
-                        <select name="permissions[]" class="form-control" multiple>
+                        <select name="permissions[]" class="form-select" multiple="multiple">
                             @foreach($permissions as $permission)
                                 <option value="{{ $permission->name }}">{{ $permission->name }}</option>
                             @endforeach
@@ -112,7 +112,7 @@
                     </div>
                     <div class="form-group">
                         <label for="edit_permissions">Permissions</label>
-                        <select name="permissions[]" id="edit_permissions" class="form-control" multiple>
+                        <select name="permissions[]" id="edit_permissions" multiple="multiple">
                             <!-- Permissions will be populated dynamically -->
                         </select>
                     </div>

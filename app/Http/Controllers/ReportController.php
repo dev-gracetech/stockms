@@ -96,8 +96,26 @@ class ReportController extends Controller
             $stock->is_overstock = $stock->quantity > $overstockThreshold;
             $stock->is_less_stock = $stock->quantity < $lessStockThreshold;
 
-            // Determine if the stock is nearing expiry
-            $stock->is_near_expiry = Carbon::parse($stock->expiry_date)->diffInDays(Carbon::now()) <= $expiryAlertDays;
+            // Determine if the stock is nearing expiry or expired
+            //$stock->is_near_expiry = Carbon::parse($stock->expiry_date)->isPast('False');
+
+            //$stock->is_expired = Carbon::parse($stock->expiry_date)->diffInDays(Carbon::now()) <= $expiryAlertDays;
+
+            $today = now()->startOfDay();
+            $expiryDate = \Carbon\Carbon::parse($stock->expiry_date)->startOfDay();
+
+
+            if ($expiryDate->diffInDays($today) <= $expiryAlertDays) {
+                $stock->is_near_expiry = true;
+                if ($expiryDate->isPast()) {
+                    $stock->is_expired = true;
+                    $stock->is_near_expiry = false;
+                } else {
+                    $stock->is_expired = false;
+                }
+            } else { 
+                $stock->is_near_expiry = false;
+            }
         });
 
         // Filter by status
@@ -109,6 +127,8 @@ class ReportController extends Controller
                     return $stock->is_less_stock;
                 } elseif ($request->status == 'near_expiry') {
                     return $stock->is_near_expiry;
+                } elseif ($request->status == 'expired') {
+                    return $stock->is_expired;
                 }
             });
         }

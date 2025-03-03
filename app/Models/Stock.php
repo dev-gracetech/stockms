@@ -9,7 +9,7 @@ class Stock extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['name', 'quantity', 'batch', 'expiry_date', 'price','selling_price', 'location', 'warehouse_id'];
+    protected $fillable = ['name', 'quantity', 'batch', 'expiry_date', 'price','selling_price', 'location', 'warehouse_id', 'status'];
     
     public function stockTransfers()
     {
@@ -39,4 +39,10 @@ class Stock extends Model
     {
         return $this->hasMany(Replenishment::class);
     }
+
+     // Relationship with Disposals
+     public function disposals()
+     {
+         return $this->hasMany(Disposal::class);
+     }
 }

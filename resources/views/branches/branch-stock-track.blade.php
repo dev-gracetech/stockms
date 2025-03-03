@@ -23,6 +23,7 @@
                                 <th>Product</th>
                                 <th>Quantity</th>
                                 <th>Dispensed To</th>
+                                <th>Notes</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,6 +33,7 @@
                                     <td>{{ $movement->stock->name }}</td>
                                     <td>{{ $movement->quantity }}</td>
                                     <td>{{ $movement->dispensed_to }}</td>
+                                    <td>{{ $movement->notes }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

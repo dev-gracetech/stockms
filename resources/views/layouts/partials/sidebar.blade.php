@@ -75,9 +75,9 @@
                         <li class="submenu-item">
                             <a href="{{route('reports.stock-details')}}" class="submenu-link">Stock Details</a>
                         </li>
-                        <li class="submenu-item">
+                        {{-- <li class="submenu-item">
                             <a href="{{route('reports.expiry-coming-stocks')}}" class="submenu-link">Expiry Coming Stocks</a>
-                        </li>
+                        </li> --}}
                         <li class="submenu-item">
                             <a href="{{route('reports.stock-track')}}" class="submenu-link">Stocks Updates</a>
                         </li>
