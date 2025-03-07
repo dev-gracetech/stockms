@@ -21,7 +21,7 @@
             </div>
             <div class="card-body mt-3">
                 <div class="table-responsive datatable-minimal">
-                    <table class="table datatable">
+                    <table class="table datatable" id="table-users">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -219,6 +219,7 @@
 @section('custom-scripts')
 <script>
     $(document).ready(function() {
+        //var objTable = $('#table-users').DataTable();
         // Handle create user form submission
         $('#createUserForm').on('submit', function(e) {
             e.preventDefault();
@@ -232,7 +233,13 @@
                 data: data,
                 success: function(response) {
                     // Show success message
-                    showAlert('success', response.message);
+                    //showAlert('success', response.message);
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                     // Close the modal
                     $('#createUserModal').modal('hide');
                     // Reload the page to reflect changes
@@ -245,7 +252,12 @@
                     for (var key in errors) {
                         errorMessages.push(errors[key][0]);
                     }
-                    showAlert('danger', errorMessages.join('<br>'));
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: errorMessages.join('<br>'),
+                    });
+                        //showAlert('danger', errorMessages.join('<br>'));
                 }
             });
         });
@@ -274,11 +286,24 @@
                     success: function(response) {
                         if (response.success) {
                             // Reload the page to reflect the changes
+                            //location.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
                             location.reload();
                         }
+                        
                     },
                     error: function(xhr) {
-                        alert('An error occurred while assigning the role.');
+                        //alert('An error occurred while assigning the role.');
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Something went wrong!",
+                        });
                     }
                 });
             }
@@ -303,11 +328,21 @@
                         if (response.success) {
                             // Remove the role badge from the UI
                             button.closest('.badge').remove();
-                            alert(response.message);
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
                         }
                     },
                     error: function(xhr) {
-                        alert('An error occurred while removing the role.');
+                        //alert('An error occurred while removing the role.');
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "An error occurred while removing the role.",
+                        });
                     }
                 });
             }
@@ -337,12 +372,24 @@
                     data: data,
                     success: function(response) {
                         if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
                             // Reload the page to reflect the changes
                             location.reload();
                         }
                     },
                     error: function(xhr) {
-                        alert('An error occurred while assigning the branch.');
+                        let errorMessage = "An error occurred while assigning the branch.";
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: errorMessage,
+                        });
+                        //alert('An error occurred while assigning the branch.');
                     }
                 });
             }
@@ -367,11 +414,23 @@
                         if (response.success) {
                             // Remove the branch badge from the UI
                             button.closest('.badge').remove();
-                            alert(response.message);
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            //alert(response.message);
                         }
                     },
                     error: function(xhr) {
-                        alert('An error occurred while removing the branch.');
+                        let errorMessage = "An error occurred while removing the branch.";
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: errorMessage,
+                        });
+                        //alert('An error occurred while removing the branch.');
                     }
                 });
             }
