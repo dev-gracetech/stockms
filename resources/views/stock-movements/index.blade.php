@@ -34,6 +34,7 @@
                     <thead>
                         <tr>
                             <th>Product</th>
+                            <th>Batch Number</th>
                             <th>From Warehouse</th>
                             <th>To Branch</th>
                             <th>Quantity</th>
@@ -45,6 +46,7 @@
                         @foreach($movements as $movement)
                             <tr>
                                 <td>{{ $movement->stock->name }}</td>
+                                <td>{{ $movement->stock->batch }}</td>
                                 <td>{{ $movement->fromWarehouse ? $movement->fromWarehouse->name : 'N/A' }}</td>
                                 <td>{{ $movement->toBranch ? $movement->toBranch->name : 'N/A' }}</td>
                                 <td>{{ $movement->quantity }}</td>

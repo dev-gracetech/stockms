@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('stocks/{stock}/edit-data', [StockController::class, 'editData'])->name('stocks.edit-data');
     Route::post('stocks/replenish', [StockController::class, 'replenish'])->name('stocks.replenish');
     Route::post('stocks/{stock}/dispose', [StockController::class, 'dispose'])->name('stocks.dispose');
+    Route::post('/stocks/{stock}/upload-image', [StockController::class, 'uploadImage'])->name('stocks.upload-image');
 
     Route::resource('branches', BranchController::class);
     Route::get('branches/{branch}/edit-data', [BranchController::class, 'editData'])->name('branches.edit-data');

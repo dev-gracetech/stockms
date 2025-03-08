@@ -9,7 +9,8 @@ class Stock extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['name', 'quantity', 'batch', 'expiry_date', 'price','selling_price', 'location', 'warehouse_id', 'status'];
+    protected $fillable = ['name', 'quantity', 'batch', 'expiry_date', 'price','selling_price', 
+    'location', 'warehouse_id', 'status', 'image'];
     
     public function stockTransfers()
     {
@@ -45,4 +46,12 @@ class Stock extends Model
      {
          return $this->hasMany(Disposal::class);
      }
+
+     public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('images/stocks/' . $this->image);
+        }
+        return asset('images/default_stock_image.png'); // Path to the default image
+    }
 }

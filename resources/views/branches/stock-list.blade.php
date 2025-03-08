@@ -20,8 +20,8 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Quantity</th>
                                 <th>Batch Number</th>
+                                <th>Quantity</th>
                                 <th>Expiry Date</th>
                                 <th>Buying Price</th>
                                 <th>Selling Price</th>
@@ -32,8 +32,8 @@
                             @foreach($stocks as $stock)
                                 <tr>
                                     <td>{{ $stock->stock->name }}</td>
-                                    <td>{{ $stock->quantity }}</td>
                                     <td>{{ $stock->stock->batch }}</td>
+                                    <td>{{ $stock->quantity }}</td>
                                     <td>{{ $stock->stock->expiry_date }}</td>
                                     <td>{{ $stock->stock->price }}</td>
                                     <td>{{ $stock->stock->selling_price }}</td>

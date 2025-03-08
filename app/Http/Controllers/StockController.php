@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Stock;
 use App\Models\Branch;
 use App\Models\Warehouse;
@@ -39,9 +40,18 @@ class StockController extends Controller
             'expiry_date' => 'required|date',
             'location' => 'required|string|max:255',
             'warehouse_id' => 'required|exists:warehouses,id',
+            //'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
 
-        $stock = Stock::create($request->all());
+        $data = $request->all();
+
+        // Handle image upload
+        //if ($request->hasFile('image')) {
+        //    $imagePath = $request->file('image')->store('stock-images', 'public');
+        //    $data['image'] = $imagePath;
+        //}
+
+        $stock = Stock::create($data);
         /* $settings = StockSetting::first();
 
         $warehouse = Branch::where('name', $settings->default_stock_location)->first();
@@ -71,10 +81,24 @@ class StockController extends Controller
             'location' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
+            //'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
 
+        $data = $request->all();
+
+        // Handle image upload
+        // if ($request->hasFile('image')) {
+        //     // Delete the old image if it exists
+        //     if ($stock->image && Storage::exists($stock->image)) {
+        //         Storage::delete($stock->image);
+        //     }
+
+        //     $imagePath = $request->file('image')->store('stock-images', 'public');
+        //     $data['image'] = $imagePath;
+        // }
+
         $stock = Stock::findOrFail($id);
-        $stock->update($request->all());
+        $stock->update($data);
 
         return redirect()->route('stocks.index')->with('success', 'Stock updated successfully.');
     }
@@ -139,5 +163,24 @@ class StockController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Stock disposed successfully.');
+    }
+
+    public function uploadImage(Request $request, Stock $stock)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images/stocks'), $imageName);
+
+            $stock->update(['image' => $imageName]);
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false]);
     }
 }

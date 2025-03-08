@@ -1,4 +1,21 @@
 @extends('layouts.layout')
+@section('custom-styles')
+<style>
+    /* Base image size */
+    .stock-image {
+        width: 50px;
+        height: 50px;
+        transition: transform 0.3s ease; /* Smooth transition */
+    }
+
+    /* Enlarge image on hover */
+    .stock-image:hover {
+        transform: scale(3); /* Enlarge by 3x */
+        position: relative;
+        z-index: 1000; /* Ensure the enlarged image is on top */
+    }
+</style>
+@endsection
 
 @section('content')
 <div class="page-title">
@@ -25,6 +42,7 @@
                     <table class="table datatable">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Product</th>
                                 <th>Quantity</th>
                                 <th>Batch Number</th>
@@ -38,6 +56,12 @@
                         <tbody>
                             @foreach($stocks as $stock)
                                 <tr>
+                                    <td>
+                                        {{-- <button class="btn btn-info btn-sm upload-image-btn" data-stock-id="{{ $stock->id }}">Upload Image</button> --}}
+                                        <a href="#" class="upload-image-btn" data-stock-id="{{ $stock->id }}">
+                                            <img src="{{ $stock->ImageUrl }}" alt="{{ $stock->name }}" width="50" height="50" class="stock-image">
+                                        </a>
+                                    </td>
                                     <td>{{ $stock->name }}</td>
                                     <td>{{ $stock->quantity }}</td>
                                     <td>{{ $stock->batch }}</td>
@@ -80,9 +104,13 @@
                 <h5 class="modal-title" id="createStockModalLabel">Add Stock</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="createStockForm">
+            <form id="createStockForm" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
+                    {{-- <div class="mb-3">
+                        <label for="image" class="form-label">Image</label>
+                        <input type="file" class="form-control" id="image" name="image">
+                    </div> --}}
                     <div class="mb-3">
                         <label for="name">Product Name</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -138,11 +166,15 @@
                 <h5 class="modal-title" id="editStockModalLabel">Edit Stock</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editStockForm">
+            <form id="editStockForm" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
                     <input type="hidden" id="edit_stock_id" name="id">
+                    {{-- <div class="mb-3">
+                        <label for="image" class="form-label">Image</label>
+                        <input type="file" class="form-control" id="edit_image" name="image">
+                    </div> --}}
                     <div class="mb-3">
                         <label for="edit_name" class="form-label">Product Name</label>
                         <input type="text" class="form-control" id="edit_name" name="name" required>
@@ -255,6 +287,28 @@
         </div>
     </div>
 </div>
+
+<!-- Image Upload Modal -->
+<div class="modal fade" id="imageUploadModal" tabindex="-1" aria-labelledby="imageUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageUploadModalLabel">Upload Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="imageUploadForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Choose Image</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('custom-scripts')
@@ -273,6 +327,10 @@
             $.ajax({
                 url: "{{ route('stocks.store') }}",
                 method: 'POST',
+                enctype: 'multipart/form-data',
+                processData: false,  // Important!
+                contentType: false,
+                cache: false,
                 data: $(this).serialize(),
                 success: function(response) {
                     $('#createStockModal').modal('hide');
@@ -299,6 +357,7 @@
                     $('#edit_selling_price').val(response.stock.selling_price);
                     $('#edit_expiry_date').val(response.stock.expiry_date); 
                     $('#edit_location').val(response.stock.location);
+                    $('#edit_image').val(response.stock.image);
                     $('#editStockModal').modal('show');
                 }
             });
@@ -310,6 +369,7 @@
             $.ajax({
                 url: "/stocks/" + stockId,
                 method: 'POST',
+                enctype: 'multipart/form-data',
                 data: $(this).serialize(),
                 success: function(response) {
                     $('#editStockModal').modal('hide');
@@ -383,6 +443,45 @@
             });
         });
 
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const imageUploadModal = document.getElementById('imageUploadModal');
+        const imageUploadForm = document.getElementById('imageUploadForm');
+        let stockId;
+
+        // Open the modal and set the stock ID
+        document.querySelectorAll('.upload-image-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                stockId = this.getAttribute('data-stock-id');
+                imageUploadModal.style.display = 'block';
+                new bootstrap.Modal(imageUploadModal).show();
+            });
+        });
+
+        // Handle form submission
+        imageUploadForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            fetch(`/stocks/${stockId}/upload-image`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Image uploaded successfully.');
+                    window.location.reload();
+                } else {
+                    alert('Failed to upload image.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
     });
 </script>
 @endsection

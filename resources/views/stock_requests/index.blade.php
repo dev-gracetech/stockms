@@ -39,7 +39,8 @@
                 <table class="table datatable">
                     <thead>
                         <tr>
-                            <th>Stock</th>
+                            <th>Product</th>
+                            <th>Batch</th>
                             <th>Branch</th>
                             <th>Quantity Requested</th>
                             <th>Status</th>
@@ -52,6 +53,7 @@
                         @foreach($stockRequests as $request)
                             <tr>
                                 <td>{{ $request->stock->name }}</td>
+                                <td>{{ $request->stock->batch }}</td>
                                 <td>{{ $request->branch->name }}</td>
                                 <td>{{ $request->quantity_requested }}</td>
                                 <td>
@@ -108,7 +110,8 @@
                         <select class="form-select" id="stock_id" name="stock_id" required>
                             <option>Select Product</option>
                             @foreach($stocks as $stock)
-                                <option value="{{ $stock->id }}">{{ $stock->name }}</option>
+                                <option value="{{ $stock->id }}">{{ $stock->name }} ({{ $stock->batch }}) Available: {{ $stock->quantity}}; 
+                                    Expiry: {{ $stock->expiry_date }}</option>
                             @endforeach
                         </select>
                     </div>
