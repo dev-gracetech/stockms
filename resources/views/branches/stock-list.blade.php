@@ -62,7 +62,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('branch-stock.dispense.submit') }}" method="POST">
+                <form action="{{ route('branch-stock.dispense') }}" method="POST">
                     @csrf
                     <input type="hidden" name="stock_id" id="stock_id"> 
                     <div class="mb-3">
