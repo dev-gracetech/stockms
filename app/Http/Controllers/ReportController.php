@@ -57,7 +57,7 @@ class ReportController extends Controller
 
         // Filter by branch
         if ($request->branch) {
-            $query->where('branch_id', $request->branch_id);
+            $query->where('branch_id', $request->branch);
         }
 
         $results = $query->get();
