@@ -44,8 +44,8 @@
                             <tr>
                                 <th></th>
                                 <th>Product</th>
-                                <th>Quantity</th>
                                 <th>Batch Number</th>
+                                <th>Available Quantity</th>
                                 <th>Expiry Date</th>
                                 <th>Buying Price</th>
                                 <th>Selling Price</th>
@@ -63,8 +63,8 @@
                                         </a>
                                     </td>
                                     <td>{{ $stock->name }}</td>
-                                    <td>{{ $stock->quantity }}</td>
                                     <td>{{ $stock->batch }}</td>
+                                    <td>{{ $stock->quantity }}</td>
                                     <td>{{ $stock->expiry_date }}</td>
                                     <td>{{ $stock->price }}</td>
                                     <td>{{ $stock->selling_price }}</td>
@@ -140,6 +140,10 @@
                         <input type="text" class="form-control" id="location" name="location" required>
                     </div>
                     <div class="mb-3">
+                        <label for="minimum_threshold" class="form-label">Minimum Threshold</label>
+                        <input type="number" class="form-control" id="minimum_threshold" name="minimum_threshold" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="warehouse_id">Warehouse</label>
                         <select class="form-control" id="warehouse_id" name="warehouse_id" required>
                             {{-- <option value="">Select Warehouse</option> --}}
@@ -202,6 +206,10 @@
                     <div class="mb-3">
                         <label for="edit_location">Stock Location</label>
                         <input type="text" class="form-control" id="edit_location" name="location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_minimum_threshold" class="form-label">Minimum Threshold</label>
+                        <input type="number" class="form-control" id="edit_minimum_threshold" name="minimum_threshold" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -327,128 +335,34 @@
             $.ajax({
                 url: "{{ route('stocks.store') }}",
                 method: 'POST',
-                enctype: 'multipart/form-data',
-                processData: false,  // Important!
-                contentType: false,
-                cache: false,
                 data: $(this).serialize(),
                 success: function(response) {
                     $('#createStockModal').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                     location.reload(); // Reload the page to reflect changes
                 },
                 error: function(response) {
-                    alert('Error: ' + response.responseJSON.message);
-                }
-            });
-        });
-
-        // Edit stock
-        $('.edit-stock').on('click', function() {
-            var stockId = $(this).data('id');
-            $.ajax({
-                url: `/stocks/${stockId}/edit-data`,
-                method: 'GET',
-                success: function(response) {
-                    $('#edit_stock_id').val(stockId);
-                    $('#edit_name').val(response.stock.name);
-                    $('#edit_quantity').val(response.stock.quantity);
-                    $('#edit_batch').val(response.stock.batch);
-                    $('#edit_price').val(response.stock.price);
-                    $('#edit_selling_price').val(response.stock.selling_price);
-                    $('#edit_expiry_date').val(response.stock.expiry_date); 
-                    $('#edit_location').val(response.stock.location);
-                    $('#edit_image').val(response.stock.image);
-                    $('#editStockModal').modal('show');
-                }
-            });
-        });
-
-        $('#editStockForm').on('submit', function(e) {
-            e.preventDefault();
-            var stockId = $('#edit_stock_id').val();
-            $.ajax({
-                url: "/stocks/" + stockId,
-                method: 'POST',
-                enctype: 'multipart/form-data',
-                data: $(this).serialize(),
-                success: function(response) {
-                    $('#editStockModal').modal('hide');
-                    location.reload(); // Reload the page to reflect changes
-                },
-                error: function(response) {
-                    alert('Error: ' + response.responseJSON.message);
-                }
-            });
-        });
-
-        // Delete stock
-        $('.delete-stock').on('click', function() {
-            var stockId = $(this).data('id');
-            $('#deleteStockModal').modal('show');
-            $('#confirmDelete').on('click', function() {
-                $.ajax({
-                    url: "/stocks/" + stockId,
-                    method: 'DELETE',
-                    success: function(response) {
-                        $('#deleteStockModal').modal('hide');
-                        location.reload(); // Reload the page to reflect changes
-                    },
-                    error: function(response) {
-                        alert('Error: ' + response.responseJSON.message);
-                    }
-                });
-            });
-        });
-
-        $('.replenish-stock').on('click', function() {
-            var stockId = $(this).data('id');
-            $('#stock_id').val(stockId);
-        });
-
-        $('#replenishStockForm').on('submit', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "{{ route('stocks.replenish') }}",
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    $('#replenishStockModal').modal('hide');
-                    location.reload(); // Reload the page to reflect changes
-                },
-                error: function(response) {
-                    alert('Error: ' + response.responseJSON.message);
-                }
-            });
-        });
-
-        $('.dispose-stock').on('click', function() {
-            var stockId = $(this).data('id');
-            $('#stock_id').val(stockId);
-        });
-
-        $('#disposeStockForm').on('submit', function(e) {
-            e.preventDefault();
-            var stockId = $('#stock_id').val();
-            $.ajax({
-                url: `/stocks/${stockId}/dispose`,
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    $('#disposeStockModal').modal('hide');
-                    location.reload(); // Reload the page to reflect changes
-                },
-                error: function(response) {
-                    alert('Error: ' + response.responseJSON.message);
+                    //alert('Error: ' + response.responseJSON.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.responseJSON.message
+                    });
                 }
             });
         });
 
     });
     document.addEventListener('DOMContentLoaded', function () {
+        //Set Image of Product
         const imageUploadModal = document.getElementById('imageUploadModal');
         const imageUploadForm = document.getElementById('imageUploadForm');
         let stockId;
-
         // Open the modal and set the stock ID
         document.querySelectorAll('.upload-image-btn').forEach(button => {
             button.addEventListener('click', function () {
@@ -457,7 +371,6 @@
                 new bootstrap.Modal(imageUploadModal).show();
             });
         });
-
         // Handle form submission
         imageUploadForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -476,6 +389,185 @@
                     window.location.reload();
                 } else {
                     alert('Failed to upload image.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        //Edit Stock
+        document.querySelectorAll('.edit-stock').forEach(button => {
+            button.addEventListener('click', function () {
+                const stockId = this.getAttribute('data-id');
+                fetch(`/stocks/${stockId}/edit-data`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('edit_stock_id').value = stockId;
+                    document.getElementById('edit_name').value = data.stock.name;
+                    document.getElementById('edit_quantity').value = data.stock.quantity;
+                    document.getElementById('edit_batch').value = data.stock.batch;
+                    document.getElementById('edit_price').value = data.stock.price;
+                    document.getElementById('edit_selling_price').value = data.stock.selling_price;
+                    document.getElementById('edit_expiry_date').value = data.stock.expiry_date;
+                    document.getElementById('edit_location').value = data.stock.location;
+                    document.getElementById('edit_minimum_threshold').value = data.stock.minimum_threshold;
+                    $('#editStockModal').modal('show');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+        //Submit edit stock form
+        document.getElementById('editStockForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const stockId = document.getElementById('edit_stock_id').value;
+            const formData = new FormData(this);
+            formData.append('_method', 'PUT');
+            fetch(`/stocks/${stockId}`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to update stock.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        //Delete stock
+        // Get all "Delete" buttons
+        const deleteButtons = document.querySelectorAll('.delete-stock');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+            stockId = button.getAttribute('data-id');
+            $('#deleteStockModal').modal('show');
+            });
+        });
+        // Handle the click event of the "Delete" button
+        document.getElementById('confirmDelete').addEventListener('click', function () {
+            fetch(`/stocks/${stockId}`, {
+                method: 'DELETE',
+                headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to delete stock.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        //Replenish stock
+        // Get all "Replenish" buttons
+        const replenishButtons = document.querySelectorAll('.replenish-stock');
+        
+        replenishButtons.forEach(button => {
+            button.addEventListener('click', function () {
+            stockId = button.getAttribute('data-id');
+            $('#stock_id').val(stockId);
+            $('#replenishStockModal').modal('show');
+            });
+        });
+        // Handle the form submission
+        document.getElementById('replenishStockForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch("{{ route('stocks.replenish') }}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to replenish stock.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        //Dispose stock
+        // Get all "Dispose" buttons
+        const disposeButtons = document.querySelectorAll('.dispose-stock');
+        disposeButtons.forEach(button => {
+            button.addEventListener('click', function () {
+            stockId = button.getAttribute('data-id');
+            $('#stock_id').val(stockId);
+            $('#disposeStockModal').modal('show');
+            });
+        });
+        // Handle the form submission
+        document.getElementById('disposeStockForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch(`/stocks/${stockId}/dispose`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to dispose stock.',
+                    });
                 }
             })
             .catch(error => {

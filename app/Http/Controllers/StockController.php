@@ -35,21 +35,15 @@ class StockController extends Controller
             'name' => 'required|string|max:255',
             'batch' => 'required|string|max:255',
             //'quantity' => 'required|integer|min:0',
+            'minimum_threshold' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
             'expiry_date' => 'required|date',
             'location' => 'required|string|max:255',
             'warehouse_id' => 'required|exists:warehouses,id',
-            //'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
 
         $data = $request->all();
-
-        // Handle image upload
-        //if ($request->hasFile('image')) {
-        //    $imagePath = $request->file('image')->store('stock-images', 'public');
-        //    $data['image'] = $imagePath;
-        //}
 
         $stock = Stock::create($data);
         /* $settings = StockSetting::first();
@@ -61,7 +55,8 @@ class StockController extends Controller
             $stock->branches()->attach($warehouse->id, ['quantity' => $request->quantity]);
         } */
 
-        return redirect()->route('stocks.index')->with('success', 'Stock created successfully.');
+        //return redirect()->route('stocks.index')->with('success', 'Stock created successfully.');
+        return response()->json(['success' => true, 'message' => 'Stock created successfully.']);
     }
 
     // Show the edit stock form
@@ -78,36 +73,27 @@ class StockController extends Controller
             'name' => 'required|string|max:255',
             'batch' => 'required|string|max:255',
             'expiry_date' => 'required|date',
+            'minimum_threshold' => 'required|integer|min:0',
             'location' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
-            //'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
 
         $data = $request->all();
 
-        // Handle image upload
-        // if ($request->hasFile('image')) {
-        //     // Delete the old image if it exists
-        //     if ($stock->image && Storage::exists($stock->image)) {
-        //         Storage::delete($stock->image);
-        //     }
-
-        //     $imagePath = $request->file('image')->store('stock-images', 'public');
-        //     $data['image'] = $imagePath;
-        // }
-
         $stock = Stock::findOrFail($id);
         $stock->update($data);
 
-        return redirect()->route('stocks.index')->with('success', 'Stock updated successfully.');
+        //return redirect()->route('stocks.index')->with('success', 'Stock updated successfully.');
+        return response()->json(['success' => true, 'message' => 'Stock updated successfully.']);
     }
 
     // Delete a stock
     public function destroy(Stock $stock)
     {
         $stock->delete();
-        return redirect()->route('stocks.index')->with('success', 'Stock deleted successfully.');
+        //return redirect()->route('stocks.index')->with('success', 'Stock deleted successfully.');
+        return response()->json(['success' => true, 'message' => 'Stock deleted successfully.']);
     }
 
     // Replenish stock
@@ -136,7 +122,8 @@ class StockController extends Controller
             'source' => $request->source,
         ]);
 
-        return redirect()->back()->with('success', 'Stock replenished successfully.');
+        //return redirect()->back()->with('success', 'Stock replenished successfully.');
+        return response()->json(['success' => true, 'message' => 'Stock replenished successfully.']);
     }
 
     // Dispose stock
@@ -162,7 +149,8 @@ class StockController extends Controller
             'notes' => $request->notes,
         ]);
 
-        return redirect()->back()->with('success', 'Stock disposed successfully.');
+        //return redirect()->back()->with('success', 'Stock disposed successfully.');
+        return response()->json(['success' => true, 'message' => 'Stock disposed successfully.']);
     }
 
     public function uploadImage(Request $request, Stock $stock)

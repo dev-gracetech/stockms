@@ -94,7 +94,8 @@ class ReportController extends Controller
             //$stock->is_overstock = $stock->total_quantity > $overstockThreshold;
             //$stock->is_less_stock = $stock->total_quantity < $lessStockThreshold;
             $stock->is_overstock = $stock->quantity > $overstockThreshold;
-            $stock->is_less_stock = $stock->quantity < $lessStockThreshold;
+            //$stock->is_less_stock = $stock->quantity < $lessStockThreshold;
+            $stock->is_less_stock = $stock->quantity < $stock->minimum_threshold;
 
             // Determine if the stock is nearing expiry or expired
             //$stock->is_near_expiry = Carbon::parse($stock->expiry_date)->isPast('False');

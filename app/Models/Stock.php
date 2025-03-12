@@ -9,7 +9,7 @@ class Stock extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['name', 'quantity', 'batch', 'expiry_date', 'price','selling_price', 
+    protected $fillable = ['name', 'quantity', 'minimum_threshold', 'batch', 'expiry_date', 'price','selling_price', 
     'location', 'warehouse_id', 'status', 'image'];
     
     public function stockTransfers()
