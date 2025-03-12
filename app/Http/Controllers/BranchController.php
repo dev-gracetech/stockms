@@ -51,7 +51,7 @@ class BranchController extends Controller
         Branch::create($request->all());
 
         //return redirect()->route('branches.index')->with('success', 'Branch created successfully.');
-        return response()->json(['success' => 'Branch created successfully!']);
+        return response()->json(['success' => true, 'message' => 'Branch created successfully!']);
     }
 
     // Show the edit branch form
@@ -80,7 +80,7 @@ class BranchController extends Controller
         $branch->update($request->all());
 
         //return redirect()->route('branches.index')->with('success', 'Branch updated successfully.');
-        return response()->json(['success' => 'Branch updated successfully!']);
+        return response()->json(['success' => true, 'message' => 'Branch updated successfully!']);
     }
 
     // Delete a branch
@@ -88,7 +88,7 @@ class BranchController extends Controller
     {
         $branch->delete();
         //return redirect()->route('branches.index')->with('success', 'Branch deleted successfully.');
-        return response()->json(['success' => 'Branch deleted successfully!']);
+        return response()->json(['success' => true, 'message' => 'Branch deleted successfully!']);
     }
 
     public function show(Branch $branch)

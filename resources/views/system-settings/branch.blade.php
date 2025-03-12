@@ -117,7 +117,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBranch">Delete</button>
             </div>
         </div>
     </div>

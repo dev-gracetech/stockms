@@ -204,62 +204,17 @@
                 data: $(this).serialize(),
                 success: function(response) {
                     $('#createBranchModal').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                     location.reload(); // Reload the page to reflect changes
                 },
                 error: function(response) {
                     alert('Error: ' + response.responseJSON.message);
                 }
-            });
-        });
-
-        // Edit Branch
-        $('.edit-branch').on('click', function() {
-            var branchId = $(this).data('id');
-            $.ajax({
-                url: `/branches/${branchId}/edit-data`,
-                method: 'GET',
-                success: function(response) {
-                    $('#edit_branch_id').val(branchId);
-                    $('#edit_branch_name').val(response.branch.name);
-                    $('#edit_branch_location').val(response.branch.location);
-                    $('#editBranchModal').modal('show');
-                }
-            });
-        });
-
-        $('#editBranchForm').on('submit', function(e) {
-            e.preventDefault();
-            var branchId = $('#edit_branch_id').val();
-            $.ajax({
-                url: "/branches/" + branchId,
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    $('#editBranchModal').modal('hide');
-                    location.reload(); // Reload the page to reflect changes
-                },
-                error: function(response) {
-                    alert('Error: ' + response.responseJSON.message);
-                }
-            });
-        });
-
-        // Delete Branch
-        $('.delete-branch').on('click', function() {
-            var branchId = $(this).data('id');
-            $('#deleteBranchModal').modal('show');
-            $('#confirmDelete').on('click', function() {
-                $.ajax({
-                    url: "/branches/" + branchId,
-                    method: 'DELETE',
-                    success: function(response) {
-                        $('#deleteBranchModal').modal('hide');
-                        location.reload(); // Reload the page to reflect changes
-                    },
-                    error: function(response) {
-                        alert('Error: ' + response.responseJSON.message);
-                    }
-                });
             });
         });
     });
@@ -324,7 +279,100 @@
                 })
                 .catch(error => console.error('Error:', error));
             });
-        }
+        };
+
+        // Get all "Edit" buttons
+        const editButtons = document.querySelectorAll('.edit-branch');
+
+        // Add click event listeners to each "Edit" button
+        editButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Get branch data from the button's data attributes
+                const branchId = button.getAttribute('data-id');
+                //const name = button.getAttribute('data-name');
+                //const location = button.getAttribute('data-location');
+                //console.log(branchId);
+
+                // Fetch the branch data
+                fetch(`/branches/${branchId}/edit-data`)
+                .then(response => response.json())
+                .then(data => {
+                    //console.log(data);
+                    // Populate the edit modal with branch data
+                    document.getElementById('edit_branch_id').value = branchId;
+                    document.getElementById('edit_branch_name').value = data.branch.name;
+                    document.getElementById('edit_branch_location').value = data.branch.location;
+                    // Update the form action URL
+                    //document.getElementById('editBranchForm').action = `/branches/${branchId}`;
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+        
+        document.getElementById('editBranchForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const branchId = document.getElementById('edit_branch_id').value;
+            const formData = new FormData(this);
+            fetch(`/branches/${branchId}`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hide the modal
+                    $('#editBranchModal').modal('hide');
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    // Reload the page to reflect changes
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Get all "Delete" buttons
+        const deleteButtons = document.querySelectorAll('.delete-branch');
+
+        // Add click event listeners to each "Delete" button
+        let branchId;
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+            branchId = button.getAttribute('data-id');
+            $('#deleteBranchModal').modal('show');
+            });
+        });
+        // Add click event listener to the "Confirm Delete" button for warehouse
+        document.getElementById('confirmDeleteBranch').addEventListener('click', function () {
+            fetch(`/branches/${branchId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            })
+            .then(response => response.json())
+            .then(data => {
+            if (data.success) {
+                // Hide the modal
+                $('#deleteBranchModal').modal('hide');
+
+                Swal.fire({
+                icon: 'success',
+                title: data.message,
+                showConfirmButton: false,
+                timer: 1500
+                });
+                // Reload the page to reflect changes
+                location.reload();
+            }
+            })
+            .catch(error => console.error('Error:', error));
+        });
     });
 </script>
 @endsection
