@@ -104,7 +104,7 @@
             fetch("{{ route('branch-stock.dispense') }}", {
                 method: 'POST',
                 body: formData,
-                token: '{{ csrf_token }}',
+                token: '{{ csrf_token() }}',
             })
             .then(response => response.json())
             .then(data => {
