@@ -24,12 +24,16 @@ class BranchStockController extends Controller
     {
         $request->validate([
             'stock_id' => 'required|exists:stocks,id',
+            'branch_id' => 'required|exists:branches,id',
             'quantity' => 'required|integer|min:1',
             'dispensed_to' => 'required|string|max:255',
             'notes' => 'nullable|string',
         ]);
 
-        $stock = BranchInventory::findOrFail($request->stock_id);
+        //$user = auth()->user();
+
+        $stock = BranchInventory::where('stock_id', $request->stock_id)
+        ->where('branch_id', $request->branch_id)->first();
 
         // Check if the branch has enough stock
         if ($stock->quantity < $request->quantity) {
@@ -40,11 +44,11 @@ class BranchStockController extends Controller
         $stock->quantity -= $request->quantity;
         $stock->save();
 
-        $user = auth()->user();
+        //$user = auth()->user();
         // Record the stock movement
         StockMovement::create([
-            'stock_id' => $stock->id,
-            'from_branch_id' => $user->branches->pluck('id')->first(),
+            'stock_id' => $request->stock_id,
+            'from_branch_id' => $request->branch_id,
             'quantity' => $request->quantity,
             'dispensed_to' => $request->dispensed_to,
             'movement_type' => 'dispense',

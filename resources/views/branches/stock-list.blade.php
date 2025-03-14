@@ -39,7 +39,8 @@
                                     <td>{{ $stock->stock->selling_price }}</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-warning dispense-stock" data-bs-toggle="modal" 
-                                        data-bs-target="#dispenseFormModal" data-id="{{ $stock->stock_id }}" title="Dispense">
+                                        data-bs-target="#dispenseFormModal" data-stock-id="{{ $stock->stock_id }}" 
+                                        data-branch-id="{{ $stock->branch_id }}" title="Dispense">
                                             <i class="bi bi-cart4"></i>
                                         </button>
                                     </td>
@@ -64,7 +65,8 @@
             <div class="modal-body">
                 <form id="dispenseForm">
                     @csrf
-                    <input type="hidden" name="stock_id" id="stock_id"> 
+                    <input type="hidden" name="stock_id" id="stock_id">
+                    <input type="hidden" name="branch_id" id="branch_id">
                     <div class="mb-3">
                         <label for="quantity" class="form-label">Quantity</label>
                         <input type="number" name="quantity" id="quantity" class="form-control" required>
@@ -91,7 +93,9 @@
         var buttons = document.querySelectorAll('.dispense-stock');
         buttons.forEach(function(button) {
             button.addEventListener('click', function() {
-                stockId = button.getAttribute('data-id');
+                let stockId = button.getAttribute('data-stock-id');
+                let branchId = button.getAttribute('data-branch-id');
+                $('#branch_id').val(branchId);
                 $('#stock_id').val(stockId);
                 $('#dispenseFormModal').modal('show');
             });
@@ -101,10 +105,10 @@
         document.getElementById('dispenseForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(this);
+            formData.append('_token', '{{ csrf_token() }}');
             fetch("{{ route('branch-stock.dispense') }}", {
                 method: 'POST',
                 body: formData,
-                token: '{{ csrf_token() }}',
             })
             .then(response => response.json())
             .then(data => {
