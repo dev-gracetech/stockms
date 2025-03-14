@@ -51,7 +51,8 @@ class BranchStockController extends Controller
             'notes' => $request->notes,
         ]);
 
-        return redirect()->route('branch-stock.track')->with('success', 'Stock dispensed successfully.');
+        //return redirect()->route('branch-stock.track')->with('success', 'Stock dispensed successfully.');
+        return response()->json(['success' => true, 'message' => 'Stock dispensed successfully.']);
     }
 
     // Track stock movements

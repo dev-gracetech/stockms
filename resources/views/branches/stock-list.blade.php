@@ -38,8 +38,8 @@
                                     <td>{{ $stock->stock->price }}</td>
                                     <td>{{ $stock->stock->selling_price }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" 
-                                        data-bs-target="#dispenseFormModal" onclick="openDispenseModal({{ $stock->stock_id }})" title="Dispense">
+                                        <button type="button" class="btn btn-sm btn-warning dispense-stock" data-bs-toggle="modal" 
+                                        data-bs-target="#dispenseFormModal" data-id="{{ $stock->stock_id }}" title="Dispense">
                                             <i class="bi bi-cart4"></i>
                                         </button>
                                     </td>
@@ -62,7 +62,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('branch-stock.dispense') }}" method="POST">
+                <form id="dispenseForm">
                     @csrf
                     <input type="hidden" name="stock_id" id="stock_id"> 
                     <div class="mb-3">
@@ -86,8 +86,48 @@
 @endsection
 @section('custom-scripts')
 <script>
-    function openDispenseModal(stockId) {
-        document.getElementById('stock_id').value = stockId;
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('dispenseFormModal');
+        var buttons = document.querySelectorAll('.dispense-stock');
+        buttons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                stockId = button.getAttribute('data-id');
+                $('#stock_id').val(stockId);
+                $('#dispenseFormModal').modal('show');
+            });
+        });
+
+        //handle dispense modal submit
+        document.getElementById('dispenseForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch("{{ route('branch-stock.dispense') }}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    window.location = "{{ route('branch-stock.track') }}";
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to dispense stock.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+   
 </script>
 @endsection

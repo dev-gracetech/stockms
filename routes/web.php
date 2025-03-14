@@ -46,7 +46,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('branches', BranchController::class);
     Route::get('branches/{branch}/edit-data', [BranchController::class, 'editData'])->name('branches.edit-data');
     Route::get('/inventory', [BranchController::class, 'inventory'])->name('branches.inventory');
-    //Route::get('/branch-stock/dispense', [BranchStockController::class, 'dispenseForm'])->name('branch-stock.dispense');
     Route::post('/branch-stock/dispense', [BranchStockController::class, 'dispense'])->name('branch-stock.dispense');
     Route::get('/branch-stock/track', [BranchStockController::class, 'track'])->name('branch-stock.track');
 
