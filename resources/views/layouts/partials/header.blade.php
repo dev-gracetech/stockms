@@ -31,7 +31,7 @@
                             <li><a class="dropdown-item" href="#">No new mail</a></li>
                         </ul>
                     </li> --}}
-                    <li class="nav-item dropdown me-3">
+                    {{-- <li class="nav-item dropdown me-3">
                             <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown"
                             aria-expanded="false"><span class="badge bg-danger">{{count(Auth::user()->notifications)}}</span>
                             <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
@@ -48,7 +48,7 @@
                                 <li><a class="dropdown-item">No notification available</a></li>
                             @endforelse
                         </ul>
-                    </li>
+                    </li> --}}
                 </ul>
                 <div class="dropdown">
                     <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
