@@ -10,6 +10,7 @@ class StockRequest extends Model
     use HasFactory;
 
     protected $fillable = [
+        'reference_id',
         'branch_id',
         'stock_id',
         'quantity_requested',
@@ -28,4 +29,9 @@ class StockRequest extends Model
         return $this->belongsTo(Stock::class);
     }
 
+    public function getReferenceNumber()
+    {
+        return $this->reference_id = 'SR' . date('Ymd') . '-' . $this->id;
+
+    }
 }

@@ -49,13 +49,17 @@ class StockRequestController extends Controller
 
         $stockRequest = StockRequest::create($validated);
 
+        $stockRequest->reference_id = $stockRequest->getReferenceNumber();
+        $stockRequest->save();
+
         // Notify admins or warehouse managers
         $admins = User::role('admin')->get();
         foreach ($admins as $admin) {
             $admin->notify(new StockRequestNotification($stockRequest, 'created'));
         }
 
-        return back()->with('success', 'Stock request created!');
+        //return back()->with('success', 'Stock request created!');
+        return response()->json(['success' => true, 'message' => 'Stock request created!']);
     }
 
     // Approve a stock request

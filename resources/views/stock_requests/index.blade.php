@@ -39,6 +39,7 @@
                 <table class="table datatable">
                     <thead>
                         <tr>
+                            <th>Reference ID</th>
                             <th>Product</th>
                             <th>Batch</th>
                             <th>Branch</th>
@@ -52,6 +53,7 @@
                     <tbody>
                         @foreach($stockRequests as $request)
                             <tr>
+                                <td>{{ $request->reference_id }}</td>
                                 <td>{{ $request->stock->name }}</td>
                                 <td>{{ $request->stock->batch }}</td>
                                 <td>{{ $request->branch->name }}</td>
@@ -80,8 +82,8 @@
                                         {{-- <button class="btn btn-primary btn-sm" onclick="editRequest({{ $request->id }})" title="Edit">
                                             <i class="bi bi-pencil-square"></i></a></button> --}}
 
-                                        <button class="btn btn-danger btn-sm" onclick="deleteRequest({{ $request->id }})" title="Delete">
-                                            <i class="bi bi-trash"></i></button>
+                                        {{-- <button class="btn btn-danger btn-sm" onclick="deleteRequest({{ $request->id }})" title="Delete">
+                                            <i class="bi bi-trash"></i></button> --}}
                                     @endif
                                 </td>
                                 @endcan
@@ -149,10 +151,20 @@
                 data: $(this).serialize(),
                 success: function(response) {
                     $('#addStockRequestForm').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                    });
                     location.reload(); // Reload the page to reflect changes
                 },
                 error: function(response) {
-                    alert('Error: ' + response.responseJSON.message);
+                    //alert('Error: ' + response.responseJSON.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: response.responseJSON.message,
+                    });
                 }
             });
         });
