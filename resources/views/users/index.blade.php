@@ -89,24 +89,24 @@
                 <h5 class="modal-title" id="createUserModalLabel">Create User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('users.store') }}" method="POST">
+            <form id="createUserForm" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" name="name" class="form-control" required>
+                        <label for="user_name">Name</label>
+                        <input type="text" name="name" id="user_name" class="form-control" required autocomplete="true">
                     </div>
                     <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" name="email" class="form-control" required>
+                        <label for="user_email">Email</label>
+                        <input type="email" name="email" id="user_email" class="form-control" required autocomplete="true">
                     </div>
                     <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <label for="user_password">Password</label>
+                        <input type="password" name="password" id="user_password" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="password_confirmation">Confirm Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -132,11 +132,11 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="edit_name">Name</label>
-                        <input type="text" name="name" id="edit_name" class="form-control" required>
+                        <input type="text" name="name" id="edit_name" class="form-control" required autocomplete="true">
                     </div>
                     <div class="form-group">
                         <label for="edit_email">Email</label>
-                        <input type="email" name="email" id="edit_email" class="form-control" required>
+                        <input type="email" name="email" id="edit_email" class="form-control" required autocomplete="true">
                     </div>
                     <div class="form-group">
                         <label for="edit_password">Password (Leave blank to keep current password)</label>
@@ -167,6 +167,7 @@
             <form id="assignRoleForm" method="POST">
                 @csrf
                 <div class="modal-body">
+                    <input type="hidden" name="user_id" id="role_user_id">
                     <div class="form-group">
                         <label for="role">Role</label>
                         <select name="role" id="role" class="form-control" required>
@@ -197,8 +198,8 @@
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="hidden" name="user_id" id="user_id" value="{{ $user->id }}">
-                        <label for="Branch">Branch</label>
+                        <input type="hidden" name="user_id" id="branch_user_id">
+                        <label for="branch">Branch</label>
                         <select name="branch" id="branch" class="form-control" required>
                             @foreach($branches as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -261,189 +262,6 @@
                 }
             });
         });
-        // Handle assign role button click
-        $('.assign-role').on('click', function() {
-            var userId = $(this).data('user-id');
-
-            // Update the form action URL
-            $('#assignRoleForm').attr('action', `/users/${userId}/assign-role`);
-        });
-
-        // Handle form submission
-        $('#assignRoleForm').on('submit', function(e) {
-            e.preventDefault();
-
-            if (confirm('Are you sure you want to assign this role?')) {
-                var form = $(this);
-                var url = form.attr('action');
-                var data = form.serialize();
-
-                // Send AJAX request to assign the role
-                $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: data,
-                    success: function(response) {
-                        if (response.success) {
-                            // Reload the page to reflect the changes
-                            //location.reload();
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            location.reload();
-                        }
-                        
-                    },
-                    error: function(xhr) {
-                        //alert('An error occurred while assigning the role.');
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "Something went wrong!",
-                        });
-                    }
-                });
-            }
-        });
-
-        // Handle remove role button click
-        $('.remove-role').on('click', function() {
-            if (confirm('Are you sure you want to remove this role?')) {
-                var userId = $(this).data('user-id');
-                var roleName = $(this).data('role-name');
-                var button = $(this);
-
-                // Send AJAX request to remove the role
-                $.ajax({
-                    url: `/users/${userId}/remove-role`,
-                    method: 'POST',
-                    data: {
-                        role: roleName,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Remove the role badge from the UI
-                            button.closest('.badge').remove();
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        //alert('An error occurred while removing the role.');
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "An error occurred while removing the role.",
-                        });
-                    }
-                });
-            }
-        });
-
-        // Handle assign branch button click
-        $('.assign-branch').on('click', function() {
-            var userId = $(this).data('user-id');
-
-            // Update the form action URL
-            $('#assignBranchForm').attr('action', `/users/${userId}/assign-branch`);
-        });
-
-        // Handle form submission
-        $('#assignBranchForm').on('submit', function(e) {
-            e.preventDefault();
-
-            if (confirm('Are you sure you want to assign this branch?')) {
-                var form = $(this);
-                var url = form.attr('action');
-                var data = form.serialize();
-
-                // Send AJAX request to assign the role
-                $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: data,
-                    success: function(response) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            // Reload the page to reflect the changes
-                            location.reload();
-                        }
-                    },
-                    error: function(xhr) {
-                        let errorMessage = "An error occurred while assigning the branch.";
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: errorMessage,
-                        });
-                        //alert('An error occurred while assigning the branch.');
-                    }
-                });
-            }
-        });
-        
-        // Handle remove role button click
-        $('.remove-branch').on('click', function() {
-            if (confirm('Are you sure you want to remove this branch?')) {
-                var userId = $(this).data('user-id');
-                var branchName = $(this).data('branch-name');
-                var button = $(this);
-
-                // Send AJAX request to remove the branch
-                $.ajax({
-                    url: `/users/${userId}/remove-branch`,
-                    method: 'POST',
-                    data: {
-                        branch: branchName,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Remove the branch badge from the UI
-                            button.closest('.badge').remove();
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            //alert(response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        let errorMessage = "An error occurred while removing the branch.";
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: errorMessage,
-                        });
-                        //alert('An error occurred while removing the branch.');
-                    }
-                });
-            }
-        });
-        // Function to show Bootstrap alert
-        function showAlert(type, message) {
-                var alert = $('#alert');
-                alert.removeClass('alert-success alert-danger').addClass(`alert-${type}`);
-                alert.html(message).show();
-                setTimeout(function() {
-                    alert.hide();
-                }, 5000); // Hide the alert after 5 seconds
-            }
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -473,6 +291,177 @@
                 });
             });
         });
+
+        //Get all assign role button click
+        const assignRoleButtons = document.querySelectorAll('.assign-role');
+
+        // Add click event listeners to each "assign role" button
+        assignRoleButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Get user data from the button's data attributes
+                const userId = button.getAttribute('data-user-id');
+                $('#role_user_id').val(userId);
+                $('#assignRoleModal').modal('show');
+            });
+        });
+
+        // Handle the form submission
+        document.getElementById('assignRoleForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const userId = document.getElementById('role_user_id').value;
+            const formData = new FormData(this);
+            fetch(`users/${userId}/assign-role`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message);
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to assign role.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        //Get all remove role button click
+        const removeRoleButtons = document.querySelectorAll('.remove-role');
+
+        // Add click event listeners to each "remove role" button
+        removeRoleButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Get user data from the button's data attributes
+                const userId = button.getAttribute('data-user-id');
+                const roleName = button.getAttribute('data-role-name');
+                //$('#user_id').val(userId);
+                //$('#assignRoleModal').modal('show');
+                if (confirm('Are you sure you want to remove this role?')) {
+
+                    // Send AJAX request to remove the role
+                    $.ajax({
+                        url: `/users/${userId}/remove-role`,
+                        method: 'POST',
+                        data: {
+                            role: roleName,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Remove the role badge from the UI
+                                button.closest('.badge').remove();
+                                showAlert(response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            //alert('An error occurred while removing the role.');
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "An error occurred while removing the role.",
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        //Get all assign branch button click
+        const assignBranchButtons = document.querySelectorAll('.assign-branch');
+
+        // Add click event listeners to each "assign branch" button
+        assignBranchButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Get user data from the button's data attributes
+                const userId = button.getAttribute('data-user-id');
+                $('#branch_user_id').val(userId);
+                $('#assignBranchModal').modal('show');
+            });
+        });
+
+        // Handle the form submission
+        document.getElementById('assignBranchForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const userId = document.getElementById('branch_user_id').value;
+            const formData = new FormData(this);
+            fetch(`users/${userId}/assign-branch`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message);
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to assign branch.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        //Get all remove branch button click
+        const removeBranchButtons = document.querySelectorAll('.remove-branch');
+
+        // Add click event listeners to each "remove branch" button
+        removeBranchButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Get user data from the button's data attributes
+                const userId = button.getAttribute('data-user-id');
+                const branchName = button.getAttribute('data-branch-name');
+                
+                if (confirm('Are you sure you want to remove this branch?')) {
+
+                    // Send AJAX request to remove the branch
+                    $.ajax({
+                        url: `/users/${userId}/remove-branch`,
+                        method: 'POST',
+                        data: {
+                            role: branchName,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Remove the role badge from the UI
+                                button.closest('.badge').remove();
+                                showAlert(response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            //alert('An error occurred while removing the role.');
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "An error occurred while removing the role.",
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        function showAlert(message)
+        {
+            Swal.fire({
+                icon: 'success',
+                title: message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
     });
 </script>
 @endsection

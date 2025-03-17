@@ -53,8 +53,8 @@ class UserController extends Controller
         //if ($request->roles) {
         //    $user->syncRoles($request->roles);
         //}
-        //return response()->json(['success' => true, 'message' => 'User created successfully.']);
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        return response()->json(['success' => true, 'message' => 'User created successfully.']);
+        //return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     /**
