@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Imports\StocksImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Stock;
 use App\Models\Branch;
 use App\Models\Warehouse;
@@ -130,13 +132,14 @@ class StockController extends Controller
     public function dispose(Request $request, Stock $stock)
     {
         $request->validate([
+            'quantity' => 'required|integer|min:1',
             'notes' => 'nullable|string',
         ]);
 
         // Remove stock from the warehouse
         $quantity_before = $stock->quantity;
-        $stock->quantity = 0;
-        $stock->status = 'disposed';
+        $stock->quantity -= $request->quantity;
+        //$stock->status = 'disposed';
         $stock->save();
 
         // Record the disposal
@@ -145,7 +148,7 @@ class StockController extends Controller
             //'branch_id' => $stock->branch_id,
             'stock_id' => $stock->id,
             'quantity_before' => $quantity_before,
-            'quantity_disposed' => $stock->quantity,
+            'quantity_disposed' => $request->quantity,
             'notes' => $request->notes,
         ]);
 
@@ -170,5 +173,16 @@ class StockController extends Controller
         }
 
         return response()->json(['success' => false]);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv',
+        ]);
+
+        Excel::import(new StocksImport, $request->file('file'));
+
+        return redirect()->route('stocks.index')->with('success', 'Stocks imported successfully.');
     }
 }

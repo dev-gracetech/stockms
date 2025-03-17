@@ -32,10 +32,25 @@
         <div id="responseMessage"></div>
         <div class="card">
             <div class="card-header">
-                <div class="col-md-6 m-2">
-                    <button class="btn btn-primary" id="createStockBtn" data-bs-toggle="modal" data-bs-target="#createStockModal">
-                        <i class="bi bi-plus-circle"></i> Create New Product</button>
+                <div class="row">
+                    <div class="col-md-6 m-2">
+                        <button class="btn btn-primary" id="createStockBtn" data-bs-toggle="modal" data-bs-target="#createStockModal">
+                            <i class="bi bi-plus-circle"></i> Create New Product</button>
+                    </div>
                 </div>
+                @can('stock_import')
+                <div class="row">
+                    <div class="col-md-4 mt-2">
+                        <form action="{{ route('stocks.import') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="input-group">
+                                <input type="file" class="form-control" name="file" accept=".xlsx,.csv" required>
+                                <button type="submit" class="btn btn-success">Import Stocks</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                @endcan
             </div>
             <div class="card-body mt-3">
                 <div class="table-responsive datatable-minimal">
@@ -282,6 +297,10 @@
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" name="stock_id" id="stock_id">
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" name="quantity" id="quantity" class="form-control" required>
+                    </div>
                     <div class="mb-3">
                         <label for="notes" class="form-label">Notes</label>
                         <textarea name="notes" id="notes" class="form-control" required></textarea>
