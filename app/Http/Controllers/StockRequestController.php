@@ -11,6 +11,7 @@ use App\Models\StockMovement;
 use App\Models\BranchInventory;
 use App\Notifications\StockRequestNotification;
 use App\Models\SystemSetting;
+use App\Jobs\SendStockRequestApprovalEmail;
 use Illuminate\Http\Request;
 
 class StockRequestController extends Controller
@@ -60,20 +61,16 @@ class StockRequestController extends Controller
         }
 
         // Send email notification to the approver
-        $this->sendApprovalEmail($stockRequest);
-        if (\Mail::failures()) {
-            return response()->json(['success' => false, 'message' => 'Error sending email notification.']);
-        }
+        // Dispatch the job to send the email
+        SendStockRequestApprovalEmail::dispatch($stockRequest);
 
         //return back()->with('success', 'Stock request created!');
         return response()->json(['success' => true, 'message' => 'Stock request created!']);
     }
 
     protected function sendApprovalEmail($stockRequest)
-    {
-        $settings = SystemSetting::first();
-        $approverEmail = $settings->notification_email; // Replace with the approver's email
-        \Mail::to($approverEmail)->send(new \App\Mail\StockRequestApproval($stockRequest));
+    {   
+        \App\Jobs\SendStockRequestApprovalEmail::dispatch($stockRequest);
     }
     
     // Approve a stock request
