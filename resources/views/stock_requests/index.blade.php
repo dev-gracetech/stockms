@@ -151,11 +151,22 @@
                 data: $(this).serialize(),
                 success: function(response) {
                     $('#addStockRequestForm').modal('hide');
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                    });
+                    if(response.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                        });
+                    }
+                    else
+                    {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message,
+                        });
+                    }
                     location.reload(); // Reload the page to reflect changes
                 },
                 error: function(response) {
