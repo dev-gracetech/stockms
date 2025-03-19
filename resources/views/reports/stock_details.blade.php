@@ -2,7 +2,7 @@
 
 @section('content')
 <div id="printable-area">
-    <h1 id="report-title">Stock Details Report</h1>
+    <h1 id="report-title">Stock Status Report</h1>
     <div class="no-print">
     <form action="{{ route('reports.stock-details') }}" method="GET" class="mb-3">
         <div class="row">

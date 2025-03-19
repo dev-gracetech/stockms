@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="card-body mt-3">
-                <table class="table datatable">
+                <table class="table" id="table-stock-requests">
                     <thead>
                         <tr>
                             <th>Reference ID</th>
@@ -141,7 +141,11 @@
 @section('custom-scripts')
 <script>
     $(document).ready(function () {
-
+        $('#table-stock-requests').DataTable(
+            {
+                "order": [[ 0, "desc" ]]
+            }
+        );
         // Create stock
         $('#addStockRequestForm').on('submit', function(e) {
             e.preventDefault();

@@ -67,13 +67,19 @@
                     </a>
                     <ul class="submenu">
                         <li class="submenu-item">
+                            <a href="{{route('reports.current-stocks')}}" class="submenu-link">Current Stock</a>
+                        </li>
+                        <li class="submenu-item">
                             <a href="{{route('reports.issued-stocks')}}" class="submenu-link">Issued Stocks</a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="{{route('reports.disposed-stocks')}}" class="submenu-link">Disposed Stocks</a>
                         </li>
                         <li class="submenu-item">
                             <a href="{{route('reports.branch-stock')}}" class="submenu-link">Branch Stock</a>
                         </li>
                         <li class="submenu-item">
-                            <a href="{{route('reports.stock-details')}}" class="submenu-link">Stock Details</a>
+                            <a href="{{route('reports.stock-details')}}" class="submenu-link">Stock Status Details</a>
                         </li>
                         {{-- <li class="submenu-item">
                             <a href="{{route('reports.expiry-coming-stocks')}}" class="submenu-link">Expiry Coming Stocks</a>

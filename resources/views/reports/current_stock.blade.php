@@ -2,9 +2,9 @@
 
 @section('content')
 <div id="printable-area">
-    <h1 id="report-title">Stock Updates Report</h1>
+    <h1 id="report-title">Current Stock Report</h1>
     <div class="no-print">
-    <form action="{{ route('reports.stock-track') }}" method="GET" class="mb-3">
+    <form action="{{ route('reports.current-stocks') }}" method="GET" class="mb-3">
         <div class="row">
             <div class="col-md-3">
                 <label for="product_name" class="form-label">Product</label>
@@ -14,14 +14,6 @@
                         <option value="{{ $product }}" {{ request('product_name') == $product ? 'selected' : '' }}>{{ $product }}</option>
                     @endforeach
                 </select>
-            </div>
-            <div class="col-md-3">
-                <label for="start_date">Start Date</label>
-                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
-            </div>
-            <div class="col-md-3">
-                <label for="end_date">End Date</label>
-                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-primary mt-4">Filter</button>
@@ -38,20 +30,26 @@
                 <th>Buying Price</th>
                 <th>Selling Price</th>
                 <th>Quantity</th>
-                <th>Date Updated</th>
+                <th>Total Sales</th>
             </tr>
         </thead>
         <tbody>
             @foreach($results as $result)
                 <tr>
-                    <td>{{ $result->stock->name}}</td>
-                    <td>{{ $result->stock->batch}}</td>
-                    <td>{{ $result->stock->price}}</td>
-                    <td>{{ $result->stock->selling_price}}</td>
-                    <td>{{ $result->quantity_after }}</td>
-                    <td>{{ $result->created_at->format('Y-m-d') }}</td>
+                    <td>{{ $result->name}}</td>
+                    <td>{{ $result->batch}}</td>
+                    <td>${{ $result->price}}</td>
+                    <td>${{ $result->selling_price}}</td>
+                    <td>{{ $result->quantity }}</td>
+                    <td>${{ $result->quantity * $result->selling_price }}</td>
                 </tr>
             @endforeach
+            <tr>
+                <td colspan="3"></td>
+                <td><strong>Grand Total:</strong></td>
+                <td>{{ $totalQuantity }}</td>
+                <td>${{ $totalSales }}</td>
+            </tr>
         </tbody>
     </table>
 </div>

@@ -2,9 +2,9 @@
 
 @section('content')
 <div id="printable-area">
-    <h1 id="report-title">Stock Updates Report</h1>
+    <h1 id="report-title">Disposed Stocks</h1>
     <div class="no-print">
-    <form action="{{ route('reports.stock-track') }}" method="GET" class="mb-3">
+    <form action="{{ route('reports.issued-stocks') }}" method="GET" class="mb-3">
         <div class="row">
             <div class="col-md-3">
                 <label for="product_name" class="form-label">Product</label>
@@ -16,11 +16,11 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="start_date">Start Date</label>
+                <label for="start_date">Disposed Start Date</label>
                 <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
             </div>
             <div class="col-md-3">
-                <label for="end_date">End Date</label>
+                <label for="end_date">Disposed End Date</label>
                 <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
             </div>
             <div class="col-md-3">
@@ -33,23 +33,19 @@
     <table class="table table-bordered">
         <thead>
             <tr>
+                <th>Disposed Date</th>
                 <th>Product</th>
-                <th>Batch Number</th>
-                <th>Buying Price</th>
-                <th>Selling Price</th>
-                <th>Quantity</th>
-                <th>Date Updated</th>
+                <th>Quantity Disposed</th>
+                <th>Notes</th>
             </tr>
         </thead>
         <tbody>
             @foreach($results as $result)
                 <tr>
-                    <td>{{ $result->stock->name}}</td>
-                    <td>{{ $result->stock->batch}}</td>
-                    <td>{{ $result->stock->price}}</td>
-                    <td>{{ $result->stock->selling_price}}</td>
-                    <td>{{ $result->quantity_after }}</td>
-                    <td>{{ $result->created_at->format('Y-m-d') }}</td>
+                    <td>{{ $result->created_at->format('Y-m-d H:i:s') }}</td>
+                    <td>{{ $result->stock->name }}</td>
+                    <td>{{ $result->quantity_disposed }}</td>
+                    <td>{{ $result->notes }}</td>
                 </tr>
             @endforeach
         </tbody>

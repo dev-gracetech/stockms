@@ -69,6 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/stock-details', [ReportController::class, 'stockDetails'])->name('reports.stock-details');
     Route::get('/reports/stock-track', [ReportController::class, 'stockTracking'])->name('reports.stock-track');
     Route::get('/reports/expiry-coming-stocks', [ReportController::class, 'expiryComingStocks'])->name('reports.expiry-coming-stocks');
+    Route::get('/reports/current-stocks', [ReportController::class, 'currentStocks'])->name('reports.current-stocks');
+    Route::get('/reports/disposed-stocks', [ReportController::class, 'disposedStocks'])->name('reports.disposed-stocks');
 
     //System Settings
     //Route::prefix('system-settings')->group(function () {

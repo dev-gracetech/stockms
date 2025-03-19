@@ -25,11 +25,11 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="start_date">Start Date</label>
+                <label for="start_date">Issue Start Date</label>
                 <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
             </div>
             <div class="col-md-3">
-                <label for="end_date">End Date</label>
+                <label for="end_date">Issue End Date</label>
                 <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
             </div>
             <div class="col-md-3">
@@ -42,12 +42,14 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Date</th>
+                <th>Issue Date</th>
                 <th>Branch</th>
                 <th>Product</th>
                 <th>Batch Number</th>
+                <th>Selling Price</th>
                 <th>Quantity</th>
-                <th>Type</th>
+                <th>Total Sales</th>
+                {{-- <th>Type</th> --}}
             </tr>
         </thead>
         <tbody>
@@ -57,10 +59,17 @@
                     <td>{{ $movement->toBranch->name }}</td>
                     <td>{{ $movement->stock->name }}</td>
                     <td>{{ $movement->stock->batch }}</td>
+                    <td>${{ number_format($movement->stock->selling_price, 2) }}</td>
                     <td>{{ $movement->quantity }}</td>
-                    <td>{{ ucfirst($movement->movement_type) }}</td>
+                    <td> ${{ number_format($movement->stock->selling_price * $movement->quantity, 2) }} </td>
+                    {{-- <td>{{ ucfirst($movement->movement_type) }}</td> --}}
                 </tr>
             @endforeach
+            <tr>
+                <td colspan="5"></td>
+                <td><strong>Grand Total Sales:</strong></td>
+                <td><strong>${{ number_format($totalSales, 2) }}</strong></td>
+            </tr>
         </tbody>
     </table>
 </div>

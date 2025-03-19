@@ -16,6 +16,14 @@
                 </select>
             </div>
             <div class="col-md-3">
+                <label for="start_date">Expiry Start Date</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date">Expiry End Date</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
+            </div>
+            <div class="col-md-3">
                 <button type="submit" class="btn btn-primary mt-4">Filter</button>
                 <button onclick="printReport()" class="btn btn-info mt-4">Print Report</button>
             </div>
@@ -29,6 +37,8 @@
                 <th>Product</th>
                 <th>Expiry Date</th>
                 <th>Quantity</th>
+                <th>Selling Price</th>
+                <th>Total Sales</th>
             </tr>
         </thead>
         <tbody>
@@ -38,8 +48,15 @@
                     <td>{{ $result->stock->name}} ({{ $result->stock->batch}})</td>
                     <td>{{ $result->stock->expiry_date }}</td>
                     <td>{{ $result->quantity }}</td>
+                    <td>${{ $result->stock->selling_price }}</td>
+                    <td>${{ $result->quantity * $result->stock->selling_price }}</td>
                 </tr>
             @endforeach
+            <tr>
+                <td colspan="4"></td>
+                <td><strong>Grand Total Sales:</strong></td>
+                <td>${{ $totalSales }}</td>
+            </tr>
         </tbody>
     </table>
 </div>

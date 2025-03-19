@@ -10,6 +10,7 @@ use App\Models\BranchInventory;
 use App\Models\Replenishment;
 use App\Models\Stock;
 use App\Models\Branch;
+use App\Models\Disposal;
 use App\Models\SystemSetting;
 
 class ReportController extends Controller
@@ -42,10 +43,15 @@ class ReportController extends Controller
         // Fetch the filtered stock movements
         $stockMovements = $query->with(['stock', 'toBranch'])->where('movement_type','issue')->get();
 
+        //$totalSales = sum($stockMovement->quantity * $stockMovement->stock->selling_price);
+
         return view('reports.issued_stocks', [
-            'branches' => Branch::all(),
+            'branches' => Branch::all()->sortBy('name'),
             'products' => Stock::distinct('name')->pluck('name'),
-            'stockMovements' => $stockMovements,
+            'stockMovements' => $stockMovements->sortByDesc('created_at'),
+            'totalSales' => $stockMovements->sum(function ($stockMovement) {
+                return $stockMovement->quantity * $stockMovement->stock->selling_price;
+            }),
             'filters' => $request->all(),
         ]);
     }
@@ -60,12 +66,35 @@ class ReportController extends Controller
             $query->where('branch_id', $request->branch);
         }
 
-        $results = $query->get();
-        $branches = Branch::all();
+        // Filter by date range
+        if ($request->start_date && $request->end_date) {
+            $query->whereHas('stock', function ($q) use ($request) {
+                $q->whereBetween('expiry_date', [
+                    Carbon::parse($request->start_date)->startOfDay(),
+                    Carbon::parse($request->end_date)->endOfDay(),
+                ]);
+            });
+        }
+        //     $query->whereBetween('expiry_date', [
+        //         Carbon::parse($request->start_date)->startOfDay(),
+        //         Carbon::parse($request->end_date)->endOfDay(),
+        //     ]);
+        // }
+
+        $results = $query->get()->sortBy('branch_id');
+        $branches = Branch::all()->sortBy('name');
         $filters = $request->all();
         
         //$notifications = auth()->user()->notifications;
-        return view('reports.branch_stock', compact('branches','results','filters'));
+        //return view('reports.branch_stock', compact('branches','results','filters'));
+        return view('reports.branch_stock', [
+            'branches' => $branches,
+            'results' => $results,
+            'filters' => $filters,
+            'totalSales' => $results->sum(function ($result) {
+                return $result->quantity * $result->stock->selling_price;
+            }),
+        ]);
     }
 
     // Show stock details with overstock, less stock, and expiry alerts
@@ -180,5 +209,63 @@ class ReportController extends Controller
         $products = Stock::distinct('name')->pluck('name');
 
         return view('reports.track_stock', compact('results','filters','products'));
+    }
+
+    public function currentStocks(Request $request)
+    {
+        $query = Stock::query();
+
+        // Filter by product
+        if ($request->product_name) {
+            $query->where('name', $request->product_name);
+        }
+
+        // Filter by date range
+        // if ($request->start_date && $request->end_date) {
+        //     $query->whereBetween('created_at', [
+        //         Carbon::parse($request->start_date)->startOfDay(),
+        //         Carbon::parse($request->end_date)->endOfDay(),
+        //     ]);
+        // }
+
+        $results = $query->get();
+        $filters = $request->all();
+        $products = Stock::distinct('name')->pluck('name');
+
+        return view('reports.current_stock', [
+            'results' => $results,
+            'filters' => $filters,
+            'products' => $products,
+            'totalQuantity' => $results->sum('quantity'),
+            'totalSales' => $results->sum(function ($result) {
+                return $result->selling_price * $result->quantity;
+            }),
+        ]);
+    }
+
+    public function disposedStocks(Request $request)
+    {
+        $stocks = Disposal::query();
+
+        // Filter by product
+        if ($request->product_name) {
+            $stocks->whereHas('stock', function ($q) use ($request) {
+                $q->where('name', $request->product_name);
+            });
+        }
+
+        // Filter by date range
+        if ($request->start_date && $request->end_date) {
+            $stocks->whereBetween('created_at', [
+                Carbon::parse($request->start_date)->startOfDay(),
+                Carbon::parse($request->end_date)->endOfDay(),
+            ]);
+        }
+
+        $results = $stocks->get();
+        $filters = $request->all();
+        $products = Stock::distinct('name')->pluck('name');
+
+        return view('reports.disposed_stocks', compact('results','filters','products'));
     }
 }
