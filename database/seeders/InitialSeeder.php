@@ -48,7 +48,7 @@ class InitialSeeder extends Seeder
         Permission::create(['name' => 'branch_manage']);
         Permission::create(['name' => 'warehouse_menu_access']);
         Permission::create(['name' => 'warehouse_manage']);
-        Permission::create(['name' => 'stock_transfer']);
+        //Permission::create(['name' => 'stock_transfer']);
         Permission::create(['name' => 'system_setting_manage']);
 
         $role = Role::create(['name' => 'admin']);
@@ -59,6 +59,9 @@ class InitialSeeder extends Seeder
         $role = Role::create(['name' => 'warehouse manager']);
         $role->givePermissionTo(['user_manage','report_manage','stock_manage','stock_request_issue',
         'branch_menu_access','branch_manage','warehouse_menu_access','system_setting_manage','stock_request_actions']);
+
+        $role = Role::create(['name' => 'warehouse staff']);
+        $role->givePermissionTo(['report_manage','stock_request_actions','warehouse_menu_access']);
         
         $role = Role::create(['name' => 'branch user']);
         $role->givePermissionTo(['report_manage','branch_menu_access','stock_request']);
