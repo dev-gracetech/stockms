@@ -66,6 +66,7 @@
                         <span>Reports</span>
                     </a>
                     <ul class="submenu">
+                        @can('warehouse_menu_access')
                         <li class="submenu-item">
                             <a href="{{route('reports.current-stocks')}}" class="submenu-link">Current Stock</a>
                         </li>
@@ -79,14 +80,14 @@
                             <a href="{{route('reports.branch-stock')}}" class="submenu-link">Branch Stock</a>
                         </li>
                         <li class="submenu-item">
-                            <a href="{{route('reports.stock-details')}}" class="submenu-link">Stock Status Details</a>
-                        </li>
-                        {{-- <li class="submenu-item">
-                            <a href="{{route('reports.expiry-coming-stocks')}}" class="submenu-link">Expiry Coming Stocks</a>
-                        </li> --}}
-                        <li class="submenu-item">
                             <a href="{{route('reports.stock-track')}}" class="submenu-link">Stocks Updates</a>
                         </li>
+                        @endcan
+                        @if(Auth::user()->can('branch_menu_access') || Auth::user()->can('warehouse_menu_access'))
+                        <li class="submenu-item">
+                            <a href="{{route('reports.stock-details')}}" class="submenu-link">Stock Status Details</a>
+                        </li>
+                        @endif
                     </ul>
                 </li>
                 @endcan

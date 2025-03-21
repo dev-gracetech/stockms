@@ -27,6 +27,9 @@
         <thead>
             <tr>
                 <th>Product</th>
+                @if(!Auth::user()->hasrole('branch user'))
+                    <th>Location</th>
+                @endif
                 <th>Total Quantity</th>
                 <th>Expiry Date</th>
                 <th>Status</th>
@@ -36,6 +39,13 @@
             @foreach($stocks as $stock)
                 <tr>
                     <td>{{ $stock->name }} ({{$stock->batch}})</td>
+                    @if(!Auth::user()->hasrole('branch user'))
+                        <td>
+                            @foreach($stock->branch as $branch)
+                            <span class="badge bg-primary">{{ $branch->name}}</span>
+                            @endforeach
+                        </td>
+                    @endif
                     <td>{{ $stock->quantity }}</td>
                     <td>{{ $stock->expiry_date }}</td>
                     <td>

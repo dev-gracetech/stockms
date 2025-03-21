@@ -103,34 +103,41 @@ class ReportController extends Controller
         // Fetch all stocks with their branch quantities
         $stocks = Stock::all();
         //$stocks = BranchInventory::with('stocks')->get();
+        if(auth()->user()->hasrole('branch user'))
+        {
+            $branch =  $branch = auth()->user()->branches->pluck('id');
+            $stock_ids = BranchInventory::where('branch_id', $branch)->pluck('stock_id');
+            $stocks = Stock::whereIn('id', $stock_ids)->get();
+        }
 
         $settings = SystemSetting::first();
         $overstockThreshold = $settings->high_stock_threshold;
         $lessStockThreshold = $settings->low_stock_threshold;
         $expiryAlertDays = $settings->expiry_alert_days;
 
-        // Define thresholds
-        // $overstockThreshold = 100; // Example: Overstock if total quantity > 100
-        // $lessStockThreshold = 10;  // Example: Less stock if total quantity < 10
-        // $expiryAlertDays = 30;     // Example: Highlight stocks expiring within 30 days
-
+        //$stocks = $query->with(['stockMovements'])->get();
         // Calculate total quantity, overstock, less stock, and expiry alerts
         $stocks->each(function ($stock) use ($overstockThreshold, $lessStockThreshold, $expiryAlertDays) {
             // Calculate total quantity across all branches
             //$stock->total_quantity = $stock->branches->sum('pivot.quantity');
-
+            if(!auth()->user()->hasrole('branch user'))
+            {
+                $branches = BranchInventory::where('stock_id', $stock->id)->pluck('branch_id');
+                $stock->branch = Branch::whereIn('id', $branches)->get();
+            }
+            else
+            {
+                $branch = auth()->user()->branches->pluck('id');
+                $stock_branch = BranchInventory::where('branch_id', $branch)->where('stock_id', $stock->id)->first();
+                $stock->quantity = $stock_branch->quantity;
+            }
+            //$stock->total_quantity = $stock->branch->sum('pivot.quantity');
             // Determine overstock and less stock
-            //$stock->is_overstock = $stock->total_quantity > $overstockThreshold;
-            //$stock->is_less_stock = $stock->total_quantity < $lessStockThreshold;
             $stock->is_overstock = $stock->quantity > $overstockThreshold;
             //$stock->is_less_stock = $stock->quantity < $lessStockThreshold;
             $stock->is_less_stock = $stock->quantity < $stock->minimum_threshold;
 
             // Determine if the stock is nearing expiry or expired
-            //$stock->is_near_expiry = Carbon::parse($stock->expiry_date)->isPast('False');
-
-            //$stock->is_expired = Carbon::parse($stock->expiry_date)->diffInDays(Carbon::now()) <= $expiryAlertDays;
-
             $today = now()->startOfDay();
             $expiryDate = \Carbon\Carbon::parse($stock->expiry_date)->startOfDay();
 
@@ -146,6 +153,7 @@ class ReportController extends Controller
             } else { 
                 $stock->is_near_expiry = false;
             }
+            
         });
 
         // Filter by status
@@ -163,8 +171,8 @@ class ReportController extends Controller
             });
         }
 
-        $notifications = auth()->user()->notifications;
-        return view('reports.stock_details', compact('stocks','notifications'));
+        //$notifications = auth()->user()->notifications;
+        return view('reports.stock_details', compact('stocks'));
     }
 
     // Show expiry coming stock details
