@@ -37,7 +37,9 @@
                 <th>Product</th>
                 <th>Expiry Date</th>
                 <th>Quantity</th>
+                <th>Buying Price</th>
                 <th>Selling Price</th>
+                <th>Total Buying Price</th>
                 <th>Total Sales</th>
             </tr>
         </thead>
@@ -48,13 +50,16 @@
                     <td>{{ $result->stock->name}} ({{ $result->stock->batch}})</td>
                     <td>{{ $result->stock->expiry_date }}</td>
                     <td>{{ $result->quantity }}</td>
+                    <td>${{ $result->stock->price }}</td>
                     <td>${{ $result->stock->selling_price }}</td>
+                    <td>${{ $result->quantity * $result->stock->price }}</td>
                     <td>${{ $result->quantity * $result->stock->selling_price }}</td>
                 </tr>
             @endforeach
             <tr>
-                <td colspan="4"></td>
-                <td><strong>Grand Total Sales:</strong></td>
+                <td colspan="5"></td>
+                <td><strong>Grand Total:</strong></td>
+                <td>${{ $totalBuyingPrice }}</td>
                 <td>${{ $totalSales }}</td>
             </tr>
         </tbody>

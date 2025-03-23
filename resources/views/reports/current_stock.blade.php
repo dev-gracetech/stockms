@@ -30,6 +30,7 @@
                 <th>Buying Price</th>
                 <th>Selling Price</th>
                 <th>Quantity</th>
+                <th>Total Buying Price</th>
                 <th>Total Sales</th>
             </tr>
         </thead>
@@ -41,6 +42,7 @@
                     <td>${{ $result->price}}</td>
                     <td>${{ $result->selling_price}}</td>
                     <td>{{ $result->quantity }}</td>
+                    <td>${{ $result->quantity * $result->price }}</td>
                     <td>${{ $result->quantity * $result->selling_price }}</td>
                 </tr>
             @endforeach
@@ -48,6 +50,7 @@
                 <td colspan="3"></td>
                 <td><strong>Grand Total:</strong></td>
                 <td>{{ $totalQuantity }}</td>
+                <td>${{ $totalBuyingPrice }}</td>
                 <td>${{ $totalSales }}</td>
             </tr>
         </tbody>

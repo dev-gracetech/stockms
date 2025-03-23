@@ -4,7 +4,7 @@
 <div id="printable-area">
     <h1 id="report-title">Disposed Stocks</h1>
     <div class="no-print">
-    <form action="{{ route('reports.issued-stocks') }}" method="GET" class="mb-3">
+    <form action="{{ route('reports.disposed-stocks') }}" method="GET" class="mb-3">
         <div class="row">
             <div class="col-md-3">
                 <label for="product_name" class="form-label">Product</label>
@@ -36,6 +36,8 @@
                 <th>Disposed Date</th>
                 <th>Product</th>
                 <th>Quantity Disposed</th>
+                <th>Buying Price</th>
+                <th>Total Buying Price</th>
                 <th>Notes</th>
             </tr>
         </thead>
@@ -45,9 +47,17 @@
                     <td>{{ $result->created_at->format('Y-m-d H:i:s') }}</td>
                     <td>{{ $result->stock->name }}</td>
                     <td>{{ $result->quantity_disposed }}</td>
+                    <td>${{ $result->stock->price }}</td>
+                    <td>${{ $result->quantity_disposed * $result->stock->price }}</td>
                     <td>{{ $result->notes }}</td>
                 </tr>
             @endforeach
+            <tr>
+                <td colspan="3"></td>
+                <td><strong>Grand Total:</strong></td>
+                <td>${{ $totalBuyingPrice }}</td>
+                <td></td>
+            </tr>
         </tbody>
     </table>
 </div>

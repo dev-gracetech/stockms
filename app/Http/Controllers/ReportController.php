@@ -49,6 +49,9 @@ class ReportController extends Controller
             'branches' => Branch::all()->sortBy('name'),
             'products' => Stock::distinct('name')->pluck('name'),
             'stockMovements' => $stockMovements->sortByDesc('created_at'),
+            'totalBuyingPrice' => $stockMovements->sum(function ($stockMovement) {
+                return $stockMovement->quantity * $stockMovement->stock->price;
+            }),
             'totalSales' => $stockMovements->sum(function ($stockMovement) {
                 return $stockMovement->quantity * $stockMovement->stock->selling_price;
             }),
@@ -91,6 +94,9 @@ class ReportController extends Controller
             'branches' => $branches,
             'results' => $results,
             'filters' => $filters,
+            'totalBuyingPrice' => $results->sum(function ($result) {
+                return $result->quantity * $result->stock->price;
+            }),
             'totalSales' => $results->sum(function ($result) {
                 return $result->quantity * $result->stock->selling_price;
             }),
@@ -245,6 +251,9 @@ class ReportController extends Controller
             'filters' => $filters,
             'products' => $products,
             'totalQuantity' => $results->sum('quantity'),
+            'totalBuyingPrice' => $results->sum(function ($result) {
+                return $result->price * $result->quantity;
+            }),
             'totalSales' => $results->sum(function ($result) {
                 return $result->selling_price * $result->quantity;
             }),
@@ -274,6 +283,13 @@ class ReportController extends Controller
         $filters = $request->all();
         $products = Stock::distinct('name')->pluck('name');
 
-        return view('reports.disposed_stocks', compact('results','filters','products'));
+        return view('reports.disposed_stocks', [
+            'results' => $results,
+            'filters' => $filters,
+            'products' => $products,
+            'totalBuyingPrice' => $results->sum(function ($result) {
+                return $result->stock->price * $result->quantity_disposed;
+            }),
+        ]);
     }
 }

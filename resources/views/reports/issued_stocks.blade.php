@@ -46,8 +46,10 @@
                 <th>Branch</th>
                 <th>Product</th>
                 <th>Batch Number</th>
+                <th>Buying Price</th>
                 <th>Selling Price</th>
                 <th>Quantity</th>
+                <th>Total Buying Price</th>
                 <th>Total Sales</th>
                 {{-- <th>Type</th> --}}
             </tr>
@@ -59,15 +61,18 @@
                     <td>{{ $movement->toBranch->name }}</td>
                     <td>{{ $movement->stock->name }}</td>
                     <td>{{ $movement->stock->batch }}</td>
+                    <td>${{ number_format($movement->stock->price, 2) }}</td>
                     <td>${{ number_format($movement->stock->selling_price, 2) }}</td>
                     <td>{{ $movement->quantity }}</td>
+                    <td> ${{ number_format($movement->stock->price * $movement->quantity, 2) }} </td>
                     <td> ${{ number_format($movement->stock->selling_price * $movement->quantity, 2) }} </td>
                     {{-- <td>{{ ucfirst($movement->movement_type) }}</td> --}}
                 </tr>
             @endforeach
             <tr>
-                <td colspan="5"></td>
-                <td><strong>Grand Total Sales:</strong></td>
+                <td colspan="6"></td>
+                <td><strong>Grand Total:</strong></td>
+                <td><strong>${{ number_format($totalBuyingPrice, 2) }}</strong></td>
                 <td><strong>${{ number_format($totalSales, 2) }}</strong></td>
             </tr>
         </tbody>
