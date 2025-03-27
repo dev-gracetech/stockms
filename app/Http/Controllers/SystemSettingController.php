@@ -7,16 +7,18 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\SystemSetting;
 use App\Models\Warehouse;
 use App\Models\Branch;
+use App\Models\Category;
 
 class SystemSettingController extends Controller
 {
     public function index()
     {
         $settings = SystemSetting::first();
+        $categories = Category::all();
         $warehouses = Warehouse::all();
         $branches = Branch::all();
         $notifications = auth()->user()->notifications;
-        return view('system-settings.index', compact('settings', 'warehouses', 'branches', 'notifications'));
+        return view('system-settings.index', compact('settings', 'categories', 'warehouses', 'branches', 'notifications'));
     }
 
     public function updateData(Request $request)

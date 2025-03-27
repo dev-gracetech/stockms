@@ -12,6 +12,7 @@ use App\Models\Warehouse;
 use App\Models\Replenishment;
 use App\Models\Disposal;
 use App\Models\SystemSetting as StockSetting;
+use App\Models\Category;
 
 class StockController extends Controller
 {
@@ -20,8 +21,9 @@ class StockController extends Controller
     {
         $stocks = Stock::with('warehouse')->where('status','active')->get();
         $warehouses = Warehouse::all();
+        $categories = Category::all();
         $notifications = auth()->user()->notifications;
-        return view('stocks.index', compact('stocks', 'warehouses', 'notifications'));
+        return view('stocks.index', compact('stocks', 'warehouses', 'categories', 'notifications'));
     }
 
     // Show the create stock form
@@ -42,6 +44,7 @@ class StockController extends Controller
             'selling_price' => 'required|numeric|min:0',
             'expiry_date' => 'required|date',
             'location' => 'required|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
             'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
@@ -79,6 +82,7 @@ class StockController extends Controller
             'location' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         $data = $request->all();

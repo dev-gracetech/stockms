@@ -60,6 +60,7 @@
                                 <th></th>
                                 <th>Product</th>
                                 <th>Batch Number</th>
+                                <th>Category</th>
                                 <th>Available Quantity</th>
                                 <th>Expiry Date</th>
                                 <th>Buying Price</th>
@@ -79,6 +80,7 @@
                                     </td>
                                     <td>{{ $stock->name }}</td>
                                     <td>{{ $stock->batch }}</td>
+                                    <td>{{ $stock->category->name ?? '' }}</td>
                                     <td>{{ $stock->quantity }}</td>
                                     <td>{{ $stock->expiry_date }}</td>
                                     <td>{{ $stock->price }}</td>
@@ -159,6 +161,15 @@
                         <input type="number" class="form-control" id="minimum_threshold" name="minimum_threshold" required>
                     </div>
                     <div class="mb-3">
+                        <label for="category_id">Category</label>
+                        <select class="form-control" id="category_id" name="category_id">
+                            <option value="">Select Category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="warehouse_id">Warehouse</label>
                         <select class="form-control" id="warehouse_id" name="warehouse_id" required>
                             {{-- <option value="">Select Warehouse</option> --}}
@@ -225,6 +236,15 @@
                     <div class="mb-3">
                         <label for="edit_minimum_threshold" class="form-label">Minimum Threshold</label>
                         <input type="number" class="form-control" id="edit_minimum_threshold" name="minimum_threshold" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_category_id">Category</label>
+                        <select class="form-control" id="edit_category_id" name="category_id">
+                            <option value="0">Select Category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -431,6 +451,12 @@
                     document.getElementById('edit_expiry_date').value = data.stock.expiry_date;
                     document.getElementById('edit_location').value = data.stock.location;
                     document.getElementById('edit_minimum_threshold').value = data.stock.minimum_threshold;
+                    if (data.stock.category_id == null) {
+                        document.getElementById('edit_category_id').value = 0;
+                    }
+                    else{
+                        document.getElementById('edit_category_id').value = data.stock.category_id;
+                    }
                     $('#editStockModal').modal('show');
                 })
                 .catch(error => {

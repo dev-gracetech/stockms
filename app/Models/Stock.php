@@ -10,7 +10,7 @@ class Stock extends Model
     use HasFactory;
     
     protected $fillable = ['name', 'quantity', 'minimum_threshold', 'batch', 'expiry_date', 'price','selling_price', 
-    'location', 'warehouse_id', 'status', 'image'];
+    'location', 'warehouse_id', 'category_id', 'status', 'image'];
     
     public function stockTransfers()
     {
@@ -53,5 +53,10 @@ class Stock extends Model
             return asset('images/stocks/' . $this->image);
         }
         return asset('images/default_stock_image.png'); // Path to the default image
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

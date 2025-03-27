@@ -21,6 +21,8 @@
                     <button class="nav-link active" id="v-pills-general-tab" data-bs-toggle="pill" data-bs-target="#v-pills-general" 
                         type="button" role="tab" aria-controls="v-pills-general" aria-selected="true">General Settings</button>
                     @can('warehouse_manage')
+                    <button class="nav-link" id="v-pills-categories-tab" data-bs-toggle="pill" data-bs-target="#v-pills-categories" 
+                        type="button" role="tab" aria-controls="v-pills-categories" aria-selected="false">Categories</button> 
                     <button class="nav-link" id="v-pills-warehouses-tab" data-bs-toggle="pill" data-bs-target="#v-pills-warehouses" 
                         type="button" role="tab" aria-controls="v-pills-warehouses" aria-selected="false">Warehouses</button>
                     @endcan
@@ -97,6 +99,11 @@
                         </div>
                     </div>
                     @can('warehouse_manage')
+                    <div class="tab-pane fade" id="v-pills-categories" role="tabpanel" aria-labelledby="v-pills-categories-tab">
+                        <h3>List Of Categories</h3>
+                        <p class="text-subtitle text-muted">Manage your categories here.</p>
+                        @include('system-settings.category')
+                    </div>
                     <div class="tab-pane fade" id="v-pills-warehouses" role="tabpanel" aria-labelledby="v-pills-warehouses-tab">
                         <h3>List Of Warehouses</h3>
                         <p class="text-subtitle text-muted">Manage your warehouses here.</p>
@@ -204,6 +211,29 @@
                 data: $(this).serialize(),
                 success: function(response) {
                     $('#createBranchModal').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function(response) {
+                    alert('Error: ' + response.responseJSON.message);
+                }
+            });
+        });
+
+        // Create Category
+        $('#createCategoryForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('categories.store') }}",
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    $('#createCategoryModal').modal('hide');
                     Swal.fire({
                         icon: 'success',
                         title: response.message,
@@ -360,6 +390,89 @@
             if (data.success) {
                 // Hide the modal
                 $('#deleteBranchModal').modal('hide');
+
+                Swal.fire({
+                icon: 'success',
+                title: data.message,
+                showConfirmButton: false,
+                timer: 1500
+                });
+                // Reload the page to reflect changes
+                location.reload();
+            }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Get all "Edit Category" buttons
+        const editCategoryButtons = document.querySelectorAll('.edit-category');
+
+        // Add click event listeners to each "Edit" button
+        editCategoryButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Get branch data from the button's data attributes
+                const categoryId = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const description = button.getAttribute('data-description');
+                //console.log(branchId);
+
+                document.getElementById('edit_category_id').value = categoryId;
+                document.getElementById('edit_category_name').value = name;
+                document.getElementById('edit_category_description').value = description;
+            });
+        });
+        
+        document.getElementById('editCategoryForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const categoryId = document.getElementById('edit_category_id').value;
+            const formData = new FormData(this);
+            fetch(`/categories/${categoryId}`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hide the modal
+                    $('#editCategoryModal').modal('hide');
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    // Reload the page to reflect changes
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Get all "Delete Category" buttons
+        const deleteCategoryButtons = document.querySelectorAll('.delete-category');
+
+        // Add click event listeners to each "Delete" button
+        let categoryId;
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+            categoryId = button.getAttribute('data-id');
+            $('#deleteCategoryModal').modal('show');
+            });
+        });
+        // Add click event listener to the "Confirm Delete" button for warehouse
+        document.getElementById('confirmDeleteCategory').addEventListener('click', function () {
+            fetch(`/categories/${categoryId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            })
+            .then(response => response.json())
+            .then(data => {
+            if (data.success) {
+                // Hide the modal
+                $('#deleteCategoryModal').modal('hide');
 
                 Swal.fire({
                 icon: 'success',
