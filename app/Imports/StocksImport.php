@@ -20,7 +20,8 @@ class StocksImport implements ToModel, WithHeadingRow
             'expiry_date'     => isset($row['expiry_date']) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['expiry_date'])) : null, // Map 'expiry_date' column
             'location'        => $row['location'] ?? null, // Map 'location' column
             'image'           => $row['image'] ?? null, // Map 'image' column (optional)
-            'warehouse_id'    => $row['warehouse_id']
+            'warehouse_id'    => $row['warehouse_id'],
+            'category_id'     => $row['category_id'] ?? null
         ]);
     }
 

@@ -28,6 +28,8 @@
                                     data-bs-toggle="modal" 
                                     data-bs-target="#editCategoryModal"
                                     data-id="{{ $category->id }}"
+                                    data-name="{{ $category->name }}"
+                                    data-description="{{ $category->description }}"
                                     title="Edit">
                                     <i class="bi bi-pencil-square"></i>    
                                 </button>
