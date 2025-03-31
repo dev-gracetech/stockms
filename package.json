@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "datatables.net-rowgroup-bs5": "^1.5.1",
-        "datatables.net-rowgroup-dt": "^1.5.1"
+        "datatables.net-rowgroup-dt": "^1.5.1",
+        "select2": "^4.1.0-rc.0"
     }
 }

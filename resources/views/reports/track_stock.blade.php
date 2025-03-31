@@ -56,3 +56,11 @@
     </table>
 </div>
 @endsection
+
+@section("custom-scripts")
+<script>
+    $(document).ready(function() {
+        $("#product_name").select2();
+    });
+</script>
+@endsection

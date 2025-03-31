@@ -66,3 +66,11 @@
     </table>
 </div>
 @endsection
+
+@section("custom-scripts")
+<script>
+    $(document).ready(function() {
+        $("#branch").select2();
+    });
+</script>
+@endsection

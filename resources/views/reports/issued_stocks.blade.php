@@ -79,3 +79,12 @@
     </table>
 </div>
 @endsection
+
+@section("custom-scripts")
+<script>
+    $(document).ready(function() {
+        $("#branch_id").select2();
+        $("#product_name").select2();
+    });
+</script>
+@endsection

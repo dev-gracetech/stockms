@@ -12,6 +12,7 @@
 <script src="{{ asset('assets/static/js/pages/datatables.js') }}"></script>
 <script src="{{ asset('assets/chartjs/Chart.min.js') }}"></script>
 <script src="{{ asset('assets/compiled/js/app.js') }}"></script>
+<script src="{{ asset('js/select2.full.min.js') }}"></script>
 {{-- <script src="{{ asset('js/main.js') }}"></script> --}}
 
 <script>

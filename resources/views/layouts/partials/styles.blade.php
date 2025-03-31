@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="{{ asset('assets/compiled/css/app.css')}}">
 <link rel="stylesheet" href="{{ asset('assets/compiled/css/app-dark.css')}}">
 <link rel="stylesheet" href="{{ asset('assets/chartjs/Chart.css')}}">
+<link rel="stylesheet" href="{{ asset('css/select2.min.css')}}">
 
 <!-- Styles -->
 {{-- <link rel="stylesheet" href="{{ mix('css/bootstrap.css') }}">
