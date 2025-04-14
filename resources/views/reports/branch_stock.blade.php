@@ -45,6 +45,7 @@
         </thead>
         <tbody>
             @foreach($results as $result)
+                @if($result->stock != null)
                 <tr>
                     <td>{{ $result->branch->name}}</td>
                     <td>{{ $result->stock->name}} ({{ $result->stock->batch}})</td>
@@ -55,6 +56,7 @@
                     <td>${{ $result->quantity * $result->stock->price }}</td>
                     <td>${{ $result->quantity * $result->stock->selling_price }}</td>
                 </tr>
+                @endif
             @endforeach
             <tr>
                 <td colspan="5"></td>

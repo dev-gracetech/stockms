@@ -52,6 +52,7 @@
                     </thead>
                     <tbody>
                         @foreach($stockRequests as $request)
+                        @if($request->stock != null)
                             <tr>
                                 <td>{{ $request->reference_id }}</td>
                                 <td>{{ $request->stock->name }}</td>
@@ -88,6 +89,7 @@
                                 </td>
                                 @endcan
                             </tr>
+                        @endif
                         @endforeach
                     </tbody>
                 </table>

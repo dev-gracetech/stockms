@@ -56,6 +56,7 @@
         </thead>
         <tbody>
             @foreach($stockMovements as $movement)
+                @if($movement->stock != null)
                 <tr>
                     <td>{{ $movement->created_at->format('Y-m-d H:i:s') }}</td>
                     <td>{{ $movement->toBranch->name }}</td>
@@ -68,6 +69,7 @@
                     <td> ${{ number_format($movement->stock->selling_price * $movement->quantity, 2) }} </td>
                     {{-- <td>{{ ucfirst($movement->movement_type) }}</td> --}}
                 </tr>
+                @endif
             @endforeach
             <tr>
                 <td colspan="6"></td>

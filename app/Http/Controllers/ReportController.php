@@ -50,9 +50,15 @@ class ReportController extends Controller
             'products' => Stock::distinct('name')->pluck('name'),
             'stockMovements' => $stockMovements->sortByDesc('created_at'),
             'totalBuyingPrice' => $stockMovements->sum(function ($stockMovement) {
+                if ($stockMovement->stock === null) {
+                    return 0;
+                }
                 return $stockMovement->quantity * $stockMovement->stock->price;
             }),
             'totalSales' => $stockMovements->sum(function ($stockMovement) {
+                if ($stockMovement->stock === null) {
+                    return 0;
+                }
                 return $stockMovement->quantity * $stockMovement->stock->selling_price;
             }),
             'filters' => $request->all(),
@@ -95,9 +101,15 @@ class ReportController extends Controller
             'results' => $results,
             'filters' => $filters,
             'totalBuyingPrice' => $results->sum(function ($result) {
+                if ($result->stock === null) {
+                    return 0;
+                }
                 return $result->quantity * $result->stock->price;
             }),
             'totalSales' => $results->sum(function ($result) {
+                if ($result->stock === null) {
+                    return 0;
+                }
                 return $result->quantity * $result->stock->selling_price;
             }),
         ]);
@@ -288,8 +300,14 @@ class ReportController extends Controller
             'filters' => $filters,
             'products' => $products,
             'totalBuyingPrice' => $results->sum(function ($result) {
+                if ($result->stock === null) {
+                    return 0;
+                }
+
                 return $result->stock->price * $result->quantity_disposed;
             }),
+            //    return $result->stock->price * $result->quantity_disposed;
+            //}),
         ]);
     }
 }

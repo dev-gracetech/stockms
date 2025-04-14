@@ -12,6 +12,7 @@ class StockMovement extends Model
     protected $fillable = [
         'stock_id',
         'from_warehouse_id',
+        'to_warehouse_id',
         'to_branch_id',
         'quantity',
         'movement_type',
@@ -32,6 +33,10 @@ class StockMovement extends Model
         return $this->belongsTo(Warehouse::class, 'from_warehouse_id');
     }
 
+    public function toWarehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'to_warehouse_id');
+    }
     // Relationship with Branch (destination)
     public function toBranch()
     {

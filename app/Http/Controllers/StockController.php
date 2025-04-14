@@ -11,6 +11,7 @@ use App\Models\Branch;
 use App\Models\Warehouse;
 use App\Models\Replenishment;
 use App\Models\Disposal;
+use App\Models\StockMovement;
 use App\Models\SystemSetting as StockSetting;
 use App\Models\Category;
 
@@ -188,5 +189,55 @@ class StockController extends Controller
         Excel::import(new StocksImport, $request->file('file'));
 
         return redirect()->route('stocks.index')->with('success', 'Stocks imported successfully.');
+    }
+
+    public function stockTransfer(Request $request, Stock $stock)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'source_id' => 'required|exists:warehouses,id',
+            'destination_id' => 'required|exists:warehouses,id',
+        ]);
+
+        if (!$stock) {
+            return response()->json(['success' => false, 'message' => 'Stock not found.']);
+        }
+        
+        if ($request->source_id != $stock->warehouse_id) {
+            return response()->json(['success' => false, 'message' => 'Invalid source warehouse.']);
+        }
+
+        if (!$request->destination_id) {
+           return response()->json(['success' => false, 'message' => 'Invalid destination warehouse.']); 
+        }
+
+        // Check if the warehouse has enough stock
+        if ($stock->quantity < $request->quantity) {
+            return response()->json(['success'=> false, 'message' => 'Insufficient stock in the warehouse.']);
+        }
+
+        if ($request->source_id == $request->destination_id) {
+            return response()->json(['success' => false, 'message' => 'Source and destination cannot be the same.']);
+        }
+
+        if ($stock->quantity >= $request->quantity) {
+            // Deduct stock from warehouse
+            $stock->quantity -= $request->quantity;
+            $stock->save();
+
+            // Create stock movement
+            StockMovement::create([
+                'stock_id' => $stock->id,
+                'from_warehouse_id' => $stock->warehouse_id,
+                'to_warehouse_id' => $request->destination_id,
+                'quantity' => $request->quantity,
+                'movement_type' => 'transfer',
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Stock was transferred.']);
+        }
+        else {
+            return response()->json(['success' => false, 'message' => 'Failed to transfer stock.']);
+        }
     }
 }

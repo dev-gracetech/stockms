@@ -44,6 +44,7 @@
                     </thead>
                     <tbody>
                         @foreach($movements as $movement)
+                        @if($movement->stock != null)
                             <tr>
                                 <td>{{ $movement->stock->name }}</td>
                                 <td>{{ $movement->stock->batch }}</td>
@@ -53,6 +54,7 @@
                                 <td>{{ ucfirst($movement->movement_type) }}</td>
                                 <td>{{ $movement->created_at->format('Y-m-d H:i:s') }}</td>
                             </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>

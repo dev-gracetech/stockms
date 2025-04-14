@@ -43,6 +43,7 @@
         </thead>
         <tbody>
             @foreach($results as $result)
+                @if($result->stock != null)
                 <tr>
                     <td>{{ $result->stock->name}}</td>
                     <td>{{ $result->stock->batch}}</td>
@@ -51,6 +52,7 @@
                     <td>{{ $result->quantity_after }}</td>
                     <td>{{ $result->created_at->format('Y-m-d') }}</td>
                 </tr>
+                @endif
             @endforeach
         </tbody>
     </table>

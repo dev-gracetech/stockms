@@ -28,6 +28,7 @@
                         </thead>
                         <tbody>
                             @foreach($movements as $movement)
+                                @if($movement->stock != null)
                                 <tr>
                                     <td>{{ $movement->created_at->format('Y-m-d H:i:s') }}</td>
                                     <td>{{ $movement->stock->name }}</td>
@@ -35,6 +36,7 @@
                                     <td>{{ $movement->dispensed_to }}</td>
                                     <td>{{ $movement->notes }}</td>
                                 </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>

@@ -43,6 +43,7 @@
         </thead>
         <tbody>
             @foreach($results as $result)
+                @if($result->stock != null)
                 <tr>
                     <td>{{ $result->created_at->format('Y-m-d H:i:s') }}</td>
                     <td>{{ $result->stock->name }}</td>
@@ -51,6 +52,7 @@
                     <td>${{ $result->quantity_disposed * $result->stock->price }}</td>
                     <td>{{ $result->notes }}</td>
                 </tr>
+                @endif
             @endforeach
             <tr>
                 <td colspan="3"></td>

@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::post('stocks/{stock}/dispose', [StockController::class, 'dispose'])->name('stocks.dispose');
     Route::post('/stocks/{stock}/upload-image', [StockController::class, 'uploadImage'])->name('stocks.upload-image');
     Route::post('/stocks/import', [StockController::class, 'import'])->name('stocks.import');
+    Route::post('stocks/{stock}/transfer', [StockController::class, 'stockTransfer'])->name('stocks.transfer');
 
     Route::resource('categories', CategoryController::class);
 

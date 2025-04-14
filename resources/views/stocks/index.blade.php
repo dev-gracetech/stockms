@@ -95,6 +95,10 @@
                                             data-bs-toggle="modal" data-bs-target="#disposeStockModal" title="Dispose Stock">
                                             <i class="bi bi-trash2"></i>
                                         </button>
+                                        <button class="btn btn-info btn-sm transfer-stock" data-id="{{ $stock->id }}" 
+                                            data-bs-toggle="modal" data-bs-target="#transferStockModal" title="Transfer Stock">
+                                            <i class="bi bi-arrow-left-right"></i>
+                                        </button>
                                         <button class="btn btn-primary btn-sm edit-stock" data-id="{{ $stock->id }}" 
                                             data-bs-toggle="modal" data-bs-target="#editStockModal" title="Edit">
                                             <i class="bi bi-pencil-square"></i>
@@ -142,15 +146,15 @@
                     </div>
                     <div class="mb-3">
                         <label for="price">Buying Price</label>
-                        <input type="number" step="0.01" name="price" class="form-control" value="0.00">
+                        <input type="number" step="0.01" name="price" id="price" class="form-control" value="0.00">
                     </div>
                     <div class="mb-3">
                         <label for="selling_price">Selling Price</label>
-                        <input type="number" step="0.01" name="selling_price" class="form-control" value="0.00">
+                        <input type="number" step="0.01" name="selling_price" id="selling_price" class="form-control" value="0.00">
                     </div>
                     <div class="mb-3">
                         <label for="expiry_date">Expiry Date</label>
-                        <input type="date" name="expiry_date" class="form-control">
+                        <input type="date" name="expiry_date" id="expiry_date" class="form-control">
                     </div>
                     <div class="mb-3">
                         <label for="location">Stock Location</label>
@@ -226,7 +230,7 @@
                         <input type="number" step="0.01" name="selling_price" id="edit_selling_price" class="form-control" value="0.00">
                     </div>
                     <div class="mb-3">
-                        <label for="expiry_date">Expiry Date</label>
+                        <label for="edit_expiry_date">Expiry Date</label>
                         <input type="date" name="expiry_date" id="edit_expiry_date" class="form-control">
                     </div>
                     <div class="mb-3">
@@ -324,6 +328,48 @@
                     <div class="mb-3">
                         <label for="notes" class="form-label">Notes</label>
                         <textarea name="notes" id="notes" class="form-control" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Transfer Stock Modal -->
+<div class="modal fade" id="transferStockModal" tabindex="-1" aria-labelledby="transferStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transferStockModalLabel">Transfer Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="transferStockForm">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="stock_id" id="stock_id">
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" name="quantity" id="quantity" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="source" class="form-label">Source Warehouse</label>
+                        <select name="source_id" id="source" class="form-control" required>
+                            @foreach ($warehouses as $warehouse)
+                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="destination" class="form-label">Destination Warehouse</label>
+                        <select name="destination_id" id="destination" class="form-control" required>
+                            @foreach ($warehouses as $warehouse)
+                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -612,6 +658,47 @@
                         icon: 'error',
                         title: 'Error',
                         text: 'Failed to dispose stock.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        //Transfer stock
+        // Get all "Transfer" buttons
+        const transferButtons = document.querySelectorAll('.transfer-stock');
+        transferButtons.forEach(button => {
+            button.addEventListener('click', function () {
+            stockId = button.getAttribute('data-id');
+            $('#stock_id').val(stockId);
+            $('#transferStockModal').modal('show');
+            });
+        });
+        // Handle the form submission
+        document.getElementById('transferStockForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch(`/stocks/${stockId}/transfer`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: data.message,
+                        timer: 1500
                     });
                 }
             })

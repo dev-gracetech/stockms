@@ -30,6 +30,7 @@
                         </thead>
                         <tbody>
                             @foreach($stocks as $stock)
+                                @if($stock->stock != null)
                                 <tr>
                                     <td>{{ $stock->stock->name }}</td>
                                     <td>{{ $stock->stock->batch }}</td>
@@ -45,6 +46,7 @@
                                         </button>
                                     </td>
                                 </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
