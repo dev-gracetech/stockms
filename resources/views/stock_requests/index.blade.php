@@ -44,6 +44,7 @@
                             <th>Batch</th>
                             <th>Branch</th>
                             <th>Quantity Requested</th>
+                            <th>Date Requested</th>
                             <th>Status</th>
                             @can('stock_request_actions')
                             <th>Actions</th>
@@ -59,6 +60,7 @@
                                 <td>{{ $request->stock->batch }}</td>
                                 <td>{{ $request->branch->name }}</td>
                                 <td>{{ $request->quantity_requested }}</td>
+                                <td>{{ $request->created_at->format('Y-m-d') }}</td>
                                 <td>
                                     @if($request->status === 'pending')
                                         <span class="badge bg-warning">Pending</span>
