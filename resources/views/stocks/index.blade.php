@@ -250,6 +250,11 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="mb-3 form-check form-switch">
+                        <label for="edit_status">Is Active?</label>
+                        <input class="form-check-input" type="checkbox" role="switch" id="active_switch">
+                        <input type="hidden" id="edit_status" name="status">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -503,6 +508,14 @@
                     else{
                         document.getElementById('edit_category_id').value = data.stock.category_id;
                     }
+                    if (data.stock.status != 'active') {
+                        document.getElementById('active_switch').checked = false;
+                        document.getElementById('edit_status').value = 'inactive';
+                    }
+                    else{
+                        document.getElementById('active_switch').checked = true;
+                        document.getElementById('edit_status').value = 'active';
+                    }
                     $('#editStockModal').modal('show');
                 })
                 .catch(error => {
@@ -510,6 +523,15 @@
                 });
             });
         });
+
+        document.getElementById('active_switch').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('edit_status').value = 'active';
+            } else {
+                document.getElementById('edit_status').value = 'inactive';
+            }
+        });
+        
         //Submit edit stock form
         document.getElementById('editStockForm').addEventListener('submit', function (e) {
             e.preventDefault();

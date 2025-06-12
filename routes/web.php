@@ -57,9 +57,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('warehouses', WarehouseController::class);
     Route::get('warehouses/{warehouse}/edit-data', [WarehouseController::class, 'editData'])->name('warehouses.edit-data');
 
-    Route::resource('stock-requests', StockRequestController::class);
+    Route::resource('stock-requests', StockRequestController::class)->except(['show']);
+    Route::get('stock-requests/datatable', [StockRequestController::class, 'getStockRequests'])->name('stock-requests.datatable');
     Route::post('stock-requests/{id}/approve', [StockRequestController::class, 'approve'])->name('stock-requests.approve');
     Route::post('stock-requests/{id}/reject', [StockRequestController::class, 'reject'])->name('stock-requests.reject');
+    Route::post('stock-requests/bulk-approve', [StockRequestController::class, 'bulkApprove'])->name('stock-requests.bulk-approve');
+    Route::post('stock-requests/bulk-reject', [StockRequestController::class, 'bulkReject'])->name('stock-requests.bulk-reject');
 
     Route::resource('stock-movements', StockMovementController::class);
 

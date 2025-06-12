@@ -14,6 +14,13 @@
 <script src="{{ asset('assets/compiled/js/app.js') }}"></script>
 <script src="{{ asset('js/select2.full.min.js') }}"></script>
 {{-- <script src="{{ asset('js/main.js') }}"></script> --}}
+<script src="https://cdn.datatables.net/buttons/1.5.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.0/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.21/dataRender/datetime.js"></script>
 
 <script>
     $(document).ready(function() {
