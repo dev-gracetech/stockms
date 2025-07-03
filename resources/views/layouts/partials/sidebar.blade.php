@@ -74,6 +74,9 @@
                             <a href="{{route('reports.issued-stocks')}}" class="submenu-link">Issued Stocks</a>
                         </li>
                         <li class="submenu-item">
+                            <a href="{{route('reports.transferred-stocks')}}" class="submenu-link">Transferred Stocks</a>
+                        </li>
+                        <li class="submenu-item">
                             <a href="{{route('reports.disposed-stocks')}}" class="submenu-link">Disposed Stocks</a>
                         </li>
                         <li class="submenu-item">

@@ -40,11 +40,15 @@ Route::middleware('auth')->group(function () {
     
     Route::resource('stocks', StockController::class);
     Route::get('stocks/{stock}/edit-data', [StockController::class, 'editData'])->name('stocks.edit-data');
-    Route::post('stocks/replenish', [StockController::class, 'replenish'])->name('stocks.replenish');
-    Route::post('stocks/{stock}/dispose', [StockController::class, 'dispose'])->name('stocks.dispose');
     Route::post('/stocks/{stock}/upload-image', [StockController::class, 'uploadImage'])->name('stocks.upload-image');
     Route::post('/stocks/import', [StockController::class, 'import'])->name('stocks.import');
-    Route::post('stocks/{stock}/transfer', [StockController::class, 'stockTransfer'])->name('stocks.transfer');
+    Route::post('/stocks/assign', [StockController::class, 'assignWarehouse'])->name('stocks.assign'); //one-time use
+
+    Route::prefix('stocks/{stock}')->group(function() {
+        Route::post('/replenish', [StockController::class, 'replenish'])->name('stocks.replenish');
+        Route::post('/transfer', [StockController::class, 'stockTransfer'])->name('stocks.transfer');
+        Route::post('/dispose', [StockController::class, 'dispose'])->name('stocks.dispose');
+    });
 
     Route::resource('categories', CategoryController::class);
 
@@ -78,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/expiry-coming-stocks', [ReportController::class, 'expiryComingStocks'])->name('reports.expiry-coming-stocks');
     Route::get('/reports/current-stocks', [ReportController::class, 'currentStocks'])->name('reports.current-stocks');
     Route::get('/reports/disposed-stocks', [ReportController::class, 'disposedStocks'])->name('reports.disposed-stocks');
+    Route::get('/reports/transferred-stocks', [ReportController::class, 'transferredStocks'])->name('reports.transferred-stocks');
 
     //System Settings
     //Route::prefix('system-settings')->group(function () {
@@ -101,6 +106,9 @@ Route::middleware(['auth','can:user_manage'])->group(function () {
 
     Route::post('users/{user}/assign-branch', [UserController::class, 'assignBranch'])->name('users.assign-branch');
     Route::post('users/{user}/remove-branch', [UserController::class, 'removeBranch'])->name('user.remove-Branch');
+
+    Route::post('users/{user}/assign-warehouse', [UserController::class, 'assignWarehouse'])->name('users.assign-warehouse');
+    Route::post('users/{user}/remove-warehouse', [UserController::class, 'removeWarehouse'])->name('users.remove-warehouse');
     
     Route::post('users/{user}/add-roles', [UserController::class, 'addRoles'])->name('users.addRoles');
     Route::post('users/{user}/remove-roles', [UserController::class, 'removeRoles'])->name('users.removeRoles');

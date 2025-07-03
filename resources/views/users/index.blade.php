@@ -27,7 +27,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Roles</th>
-                                <th>Branches</th>
+                                <th>Branches/Warehouse</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -51,6 +51,12 @@
                                                     class='bi bi-trash remove-branch'></i>
                                             </span>
                                         @endforeach
+                                        @foreach ($user->warehouses as $warehouse)
+                                            <span class="badge bg-secondary">{{ $warehouse->name }}
+                                                <i style='cursor:pointer' data-user-id="{{ $user->id }}" data-warehouse-name="{{ $warehouse->name }}"
+                                                    class='bi bi-trash remove-warehouse'></i>
+                                            </span>
+                                        @endforeach
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-info btn-sm assign-role" data-user-id="{{ $user->id }}" data-bs-toggle="modal" 
@@ -58,6 +64,9 @@
                                         </button>
                                         <button type="button" class="btn btn-warning btn-sm assign-branch" data-user-id="{{ $user->id }}" data-bs-toggle="modal" 
                                             data-bs-target="#assignBranchModal" title="Assign Branch"><i class="bi bi-person-workspace"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm assign-warehouse" data-user-id="{{ $user->id }}" data-bs-toggle="modal" 
+                                            data-bs-target="#assignWarehouseModal" title="Assign Warehouse"><i class="bi bi-house-add"></i>
                                         </button>
                                         <button type="button" class="btn btn-primary btn-sm edit-user" data-user-id="{{ $user->id }}" data-bs-toggle="modal" 
                                             data-bs-target="#editUserModal" title="Edit"><i class="bi bi-pencil-square"></i>
@@ -203,6 +212,36 @@
                         <select name="branch" id="branch" class="form-control" required>
                             @foreach($branches as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Assigne Warehouse Modal -->
+<div class="modal fade" id="assignWarehouseModal" tabindex="-1" aria-labelledby="assignWarehouseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignWarehouseModalLabel">Assign Warehouse</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="assignWarehouseForm" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" name="user_id" id="warehouse_user_id">
+                        <label for="warehouse">Warehouse</label>
+                        <select name="warehouse" id="warehouse" class="form-control" required>
+                            @foreach($warehouses as $warehouse)
+                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -431,6 +470,86 @@
                         method: 'POST',
                         data: {
                             role: branchName,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Remove the role badge from the UI
+                                button.closest('.badge').remove();
+                                showAlert(response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            //alert('An error occurred while removing the role.');
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "An error occurred while removing the role.",
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        //Get all assign warehouse button click
+        const assignWarehouseButtons = document.querySelectorAll('.assign-warehouse');
+
+        // Add click event listeners to each "assign warehouse" button
+        assignWarehouseButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Get user data from the button's data attributes
+                const userId = button.getAttribute('data-user-id');
+                $('#warehouse_user_id').val(userId);
+                $('#assignWarehouseModal').modal('show');
+            });
+        });
+
+        //handle assign warehouse form submit
+        document.getElementById('assignWarehouseForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const userId = document.getElementById('warehouse_user_id').value;
+            const formData = new FormData(this);
+            fetch(`users/${userId}/assign-warehouse`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message);
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to assign warehouse.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        //get all remove warehouse button click
+        const removeWarehouseButtons = document.querySelectorAll('.remove-warehouse');
+
+        // Add click event listeners to each "remove warehouse" button
+        removeWarehouseButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Get user data from the button's data attributes
+                const userId = button.getAttribute('data-user-id');
+                const warehouseName = button.getAttribute('data-warehouse-name');
+                
+                if (confirm('Are you sure you want to remove this warehouse?')) {
+
+                    // Send AJAX request to remove the warehouse
+                    $.ajax({
+                        url: `/users/${userId}/remove-warehouse`,
+                        method: 'POST',
+                        data: {
+                            role: warehouseName,
                             _token: '{{ csrf_token() }}'
                         },
                         success: function(response) {

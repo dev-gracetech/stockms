@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Branch;
+use App\Models\Warehouse;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -18,8 +19,9 @@ class UserController extends Controller
         $users = User::all(); // Fetch all users
         $roles = Role::all();
         $branches = Branch::all();
+        $warehouses = Warehouse::all();
         $notifications = auth()->user()->notifications;
-        return view('users.index', compact('users', 'roles', 'branches', 'notifications'));
+        return view('users.index', compact('users', 'roles', 'branches', 'warehouses', 'notifications'));
     }
 
     /**
@@ -173,6 +175,30 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Branch removed successfully.'
+        ]);
+    }
+
+    public function assignWarehouse(Request $request, User $user)
+    {
+        // Attach the warehouse to the user
+        $user->warehouses()->sync($request->warehouse);
+
+        return response()->json(['success' => true, 'message' => 'Warehouse assigned successfully.']);
+    }
+
+    public function removeWarehouse(Request $request, User $user)
+    {
+        //$user = User::findOrFail($userId);
+        $warehouseId = $request->warehouse;
+
+        // Detach the warehouse from the user
+        $user->warehouses()->detach($warehouseId);
+
+        // Return updated list of warehouses as JSON
+        $warehouses = $user->warehouses;
+        return response()->json([
+            'success' => true,
+            'message' => 'Warehouse removed successfully.'
         ]);
     }
 }

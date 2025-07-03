@@ -10,6 +10,7 @@ use App\Models\BranchInventory;
 use App\Models\Replenishment;
 use App\Models\Stock;
 use App\Models\Branch;
+use App\Models\Warehouse;
 use App\Models\Disposal;
 use App\Models\SystemSetting;
 
@@ -241,6 +242,11 @@ class ReportController extends Controller
     {
         $query = Stock::query();
 
+        // Filter by warehouse
+        //if ($request->warehouse_id) {
+        //    $query->where('warehouse_id', $request->warehouse_id);
+        //}
+
         // Filter by product
         if ($request->product_name) {
             $query->where('name', $request->product_name);
@@ -259,6 +265,7 @@ class ReportController extends Controller
         $products = Stock::distinct('name')->pluck('name');
 
         return view('reports.current_stock', [
+            'warehouses' => Warehouse::all()->sortBy('name'),
             'results' => $results,
             'filters' => $filters,
             'products' => $products,
@@ -308,6 +315,55 @@ class ReportController extends Controller
             }),
             //    return $result->stock->price * $result->quantity_disposed;
             //}),
+        ]);
+    }
+
+    public function transferredStocks(Request $request)
+    {
+        $query = StockMovement::query();
+
+        // Filter by warehouse
+        if ($request->warehouse_id) {
+            $query->where('to_warehouse_id', $request->warehouse_id);
+        }
+
+        // Filter by product
+        if ($request->product_name) {
+            $query->whereHas('stock', function ($q) use ($request) {
+                $q->where('name', $request->product_name);
+            });
+        }
+
+        // Filter by date range
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->start_date)->startOfDay(),
+                Carbon::parse($request->end_date)->endOfDay(),
+            ]);
+        }
+
+        // Fetch the filtered stock movements
+        $stockMovements = $query->with(['stock','toWarehouse'])->where('movement_type','transfer')->get();
+
+        //$totalSales = sum($stockMovement->quantity * $stockMovement->stock->selling_price);
+
+        return view('reports.transferred_stocks', [
+            'warehouses' => Warehouse::all()->sortBy('name'),
+            'products' => Stock::distinct('name')->pluck('name'),
+            'stockMovements' => $stockMovements->sortByDesc('created_at'),
+            'totalBuyingPrice' => $stockMovements->sum(function ($stockMovement) {
+                if ($stockMovement->stock === null) {
+                    return 0;
+                }
+                return $stockMovement->quantity * $stockMovement->stock->price;
+            }),
+            'totalSales' => $stockMovements->sum(function ($stockMovement) {
+                if ($stockMovement->stock === null) {
+                    return 0;
+                }
+                return $stockMovement->quantity * $stockMovement->stock->selling_price;
+            }),
+            'filters' => $request->all(),
         ]);
     }
 }

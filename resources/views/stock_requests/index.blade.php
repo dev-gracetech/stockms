@@ -53,7 +53,7 @@
                             <th>Reference ID</th>
                             <th>Product</th>
                             <th>Batch</th>
-                            {{-- <th>Branch</th> --}}
+                            <th>Branch</th>
                             <th>Quantity Requested</th>
                             <th>Date Requested</th>
                             <th>Status</th>
@@ -125,7 +125,7 @@
                         <select class="form-select" id="stock_id" name="stock_id" required style="width: 100%">
                             <option>Select Product</option>
                             @foreach($stocks as $stock)
-                                <option value="{{ $stock->id }}">{{ $stock->name }} ({{ $stock->batch }}) Available: {{ $stock->quantity}}; 
+                                <option value="{{ $stock->id }}">{{ $stock->name }} ({{ $stock->batch }}) Available: {{ $stock->warehouse_quantity }}; 
                                     Expiry: {{ $stock->expiry_date }}</option>
                             @endforeach
                         </select>
@@ -214,6 +214,7 @@
                 { data: 'reference_id', name: 'reference_id' },
                 { data: 'stock.name', name: 'stock.name' },
                 { data: 'stock.batch', name: 'stock.batch' },
+                { data: 'branch.name', name: 'branch.name' },
                 { data: 'quantity_requested', name: 'quantity_requested' },
                 { data: 'created_at', name: 'created_at', render: function(data, type, row) { return moment(data).format('Y-MM-D'); } },
                 { data: 'status', name: 'status' }

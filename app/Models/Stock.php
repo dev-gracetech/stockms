@@ -26,9 +26,26 @@ class Stock extends Model
             ->withTimestamps();
     }
 
-    public function warehouse()
+    public function warehouses()
     {
-        return $this->belongsTo(Warehouse::class);
+        return $this->belongsToMany(Warehouse::class)
+            ->withPivot('quantity', 'minimum_threshold')
+            ->withTimestamps();
+    }
+
+    public function getWarehouseQuantityAttribute()
+    {
+        return $this->warehouses()->where('warehouse_id', 1)->first()->pivot->quantity ?? 0; // Use optional chaining for null check and default value
+    }
+
+    public function warehouse_qty($warehouseId)
+    {
+        return $this->warehouses()->where('warehouse_id', $warehouseId)->first()->pivot->quantity ?? 0; // Use optional chaining for null check and default value
+    }
+    // Get total quantity across all warehouses
+    public function getTotalQuantityAttribute()
+    {
+        return $this->warehouses->sum('pivot.quantity');
     }
 
     public function stockMovements()

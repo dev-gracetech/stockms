@@ -2,9 +2,9 @@
 
 @section('content')
 <div id="printable-area">
-    <h1 id="report-title">Current Stock Report</h1>
+    <h1 id="report-title">Transferred Stocks to Warehouse</h1>
     <div class="no-print">
-    <form action="{{ route('reports.current-stocks') }}" method="GET" class="mb-3">
+    <form action="{{ route('reports.transferred-stocks') }}" method="GET" class="mb-3">
         <div class="row">
             <div class="col-md-3">
                 <label for="warehouse_id" class="form-label">Warehouse</label>
@@ -25,6 +25,14 @@
                 </select>
             </div>
             <div class="col-md-3">
+                <label for="start_date">Transfer Start Date</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date">Transfer End Date</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
+            </div>
+            <div class="col-md-3">
                 <button type="submit" class="btn btn-primary mt-4">Filter</button>
                 <button onclick="printReport()" class="btn btn-info mt-4">Print Report</button>
             </div>
@@ -34,6 +42,8 @@
     <table class="table table-bordered">
         <thead>
             <tr>
+                <th>Transfer Date</th>
+                <th>Warehouse</th>
                 <th>Product</th>
                 <th>Batch Number</th>
                 <th>Buying Price</th>
@@ -41,32 +51,31 @@
                 <th>Quantity</th>
                 <th>Total Buying Price</th>
                 <th>Total Sales</th>
+                {{-- <th>Type</th> --}}
             </tr>
         </thead>
         <tbody>
-            @foreach($results as $result)
+            @foreach($stockMovements as $movement)
+                @if($movement->stock != null)
                 <tr>
-                    <td>{{ $result->name}}</td>
-                    <td>{{ $result->batch}}</td>
-                    <td>${{ $result->price}}</td>
-                    <td>${{ $result->selling_price}}</td>
-                    <td>
-                        @if(request('warehouse_id') == null)
-                        {{ $result->total_quantity }}
-                        @else
-                        {{ $result->warehouse_qty(request('warehouse_id')) }}
-                        @endif
-                    </td>
-                    <td>${{ $result->quantity * $result->price }}</td>
-                    <td>${{ $result->quantity * $result->selling_price }}</td>
+                    <td>{{ $movement->created_at->format('Y-m-d H:i:s') }}</td>
+                    <td>{{ $movement->toWarehouse->name }}</td>
+                    <td>{{ $movement->stock->name }}</td>
+                    <td>{{ $movement->stock->batch }}</td>
+                    <td>${{ number_format($movement->stock->price, 2) }}</td>
+                    <td>${{ number_format($movement->stock->selling_price, 2) }}</td>
+                    <td>{{ $movement->quantity }}</td>
+                    <td> ${{ number_format($movement->stock->price * $movement->quantity, 2) }} </td>
+                    <td> ${{ number_format($movement->stock->selling_price * $movement->quantity, 2) }} </td>
+                    {{-- <td>{{ ucfirst($movement->movement_type) }}</td> --}}
                 </tr>
+                @endif
             @endforeach
             <tr>
-                <td colspan="3"></td>
+                <td colspan="6"></td>
                 <td><strong>Grand Total:</strong></td>
-                <td>{{ $totalQuantity }}</td>
-                <td>${{ $totalBuyingPrice }}</td>
-                <td>${{ $totalSales }}</td>
+                <td><strong>${{ number_format($totalBuyingPrice, 2) }}</strong></td>
+                <td><strong>${{ number_format($totalSales, 2) }}</strong></td>
             </tr>
         </tbody>
     </table>

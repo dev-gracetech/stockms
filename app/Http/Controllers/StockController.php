@@ -20,11 +20,13 @@ class StockController extends Controller
     // List all stocks
     public function index()
     {
-        $stocks = Stock::with('warehouse')->where('status','active')->get();
+        $user = auth()->user();
+        $user_warehouse_id = $user->warehouses->pluck('id')->first();
+        $stocks = Stock::where('status','active')->get();
         $warehouses = Warehouse::all();
         $categories = Category::all();
         $notifications = auth()->user()->notifications;
-        return view('stocks.index', compact('stocks', 'warehouses', 'categories', 'notifications'));
+        return view('stocks.index', compact('stocks', 'warehouses', 'user_warehouse_id', 'categories', 'notifications'));
     }
 
     // Show the create stock form
@@ -46,7 +48,7 @@ class StockController extends Controller
             'expiry_date' => 'required|date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'warehouse_id' => 'required|exists:warehouses,id',
+            // 'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
         $data = $request->all();
@@ -61,10 +63,32 @@ class StockController extends Controller
             $stock->branches()->attach($warehouse->id, ['quantity' => $request->quantity]);
         } */
 
+        // Attach the stock to all warehouses
+        $warehouses = Warehouse::pluck('id')->toArray();
+        foreach ($warehouses as $warehouse) {
+                $stock->warehouses()->attach($warehouse, ['quantity' => 0, 'minimum_threshold' => 0]);
+        }
+
         //return redirect()->route('stocks.index')->with('success', 'Stock created successfully.');
         return response()->json(['success' => true, 'message' => 'Stock created successfully.']);
     }
 
+    //temporary
+    public function assignWarehouse(Request $request)
+    {
+        $stocks = Stock::all();
+        $warehouses = Warehouse::pluck('id')->toArray();
+        foreach ($stocks as $stock) {
+            foreach ($warehouses as $warehouse) {
+                if ($stock->warehouse_id == $warehouse)
+                    $stock->warehouses()->attach($warehouse, ['quantity' => $stock->quantity, 'minimum_threshold' => 0]);
+                else
+                    $stock->warehouses()->attach($warehouse, ['quantity' => 0, 'minimum_threshold' => 0]);
+            }
+        }
+        
+        return response()->redirectToRoute('stocks.index')->with('success', 'Stock assigned successfully.');
+    }
     // Show the edit stock form
     public function editdata(Stock $stock)
     {
@@ -95,6 +119,12 @@ class StockController extends Controller
         return response()->json(['success' => true, 'message' => 'Stock updated successfully.']);
     }
 
+    public function show(Stock $stock)
+    {
+        $warehouses = Warehouse::all();
+        return view('stocks.show', compact('stock', 'warehouses'));
+    }
+
     // Delete a stock
     public function destroy(Stock $stock)
     {
@@ -104,7 +134,7 @@ class StockController extends Controller
     }
 
     // Replenish stock
-    public function replenish(Request $request)
+    public function replenish(Request $request, Stock $stock)
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
@@ -113,15 +143,23 @@ class StockController extends Controller
 
         // Add stock to the warehouse
         $quantity_after;
-        $stock = Stock::findOrFail($request->stock_id);
-        $quantity_before = $stock->quantity;
+
+        $quantity_before = $stock->warehouses()->where('warehouse_id', $request->warehouse_id)->first()->pivot->quantity;
         $quantity_after = $quantity_before + $request->quantity;
+
         $stock->quantity += $request->quantity;
         $stock->save();
 
+         $syncData[$request->warehouse_id] = [
+                'quantity' => $quantity_after,
+                'minimum_threshold' => 0
+            ];
+
+        $stock->warehouses()->syncWithoutDetaching($syncData);
+
         // Record the replenishment
         Replenishment::create([
-            'warehouse_id' => $stock->warehouse_id,
+            'warehouse_id' => $request->warehouse_id,
             'stock_id' => $request->stock_id,
             'quantity_added' => $request->quantity,
             'quantity_before' => $quantity_before,
@@ -129,7 +167,6 @@ class StockController extends Controller
             'source' => $request->source,
         ]);
 
-        //return redirect()->back()->with('success', 'Stock replenished successfully.');
         return response()->json(['success' => true, 'message' => 'Stock replenished successfully.']);
     }
 
@@ -140,16 +177,29 @@ class StockController extends Controller
             'quantity' => 'required|integer|min:1',
             'notes' => 'nullable|string',
         ]);
-
+        
         // Remove stock from the warehouse
         $quantity_before = $stock->quantity;
         $stock->quantity -= $request->quantity;
         //$stock->status = 'disposed';
         $stock->save();
 
+        //$stock = Stock::findOrFail($request->stock_id);
+
+        $quantity_before = $stock->warehouses()->where('warehouse_id', $request->warehouse_id)->first()->pivot->quantity;
+        $quantity_after = $quantity_before - $request->quantity;
+
+        $syncData[$request->warehouse_id] = [
+                'quantity' => $quantity_after,
+                'minimum_threshold' => 0
+            ];
+
+        $stock->warehouses()->syncWithoutDetaching($syncData);
+
+        
         // Record the disposal
         Disposal::create([
-            'warehouse_id' => $stock->warehouse_id,
+            'warehouse_id' => $request->warehouse_id,
             //'branch_id' => $stock->branch_id,
             'stock_id' => $stock->id,
             'quantity_before' => $quantity_before,
@@ -157,7 +207,6 @@ class StockController extends Controller
             'notes' => $request->notes,
         ]);
 
-        //return redirect()->back()->with('success', 'Stock disposed successfully.');
         return response()->json(['success' => true, 'message' => 'Stock disposed successfully.']);
     }
 
@@ -203,16 +252,17 @@ class StockController extends Controller
             return response()->json(['success' => false, 'message' => 'Stock not found.']);
         }
         
-        if ($request->source_id != $stock->warehouse_id) {
-            return response()->json(['success' => false, 'message' => 'Invalid source warehouse.']);
-        }
+        //if ($request->source_id != $stock->warehouse_id) {
+        //    return response()->json(['success' => false, 'message' => 'Invalid source warehouse.']);
+        //}
 
         if (!$request->destination_id) {
            return response()->json(['success' => false, 'message' => 'Invalid destination warehouse.']); 
         }
 
         // Check if the warehouse has enough stock
-        if ($stock->quantity < $request->quantity) {
+        $stock_source = $stock->warehouses()->where('warehouse_id', $request->source_id)->first()->pivot->quantity;
+        if ($stock_source < $request->quantity) {
             return response()->json(['success'=> false, 'message' => 'Insufficient stock in the warehouse.']);
         }
 
@@ -220,13 +270,26 @@ class StockController extends Controller
             return response()->json(['success' => false, 'message' => 'Source and destination cannot be the same.']);
         }
 
-        if ($stock->quantity >= $request->quantity) {
-            // Deduct stock from warehouse
-            $stock->quantity -= $request->quantity;
-            $stock->save();
+        $quantity_before = $stock->warehouses()->where('warehouse_id', $request->source_id)->first()->pivot->quantity;
+        $quantity_after = $quantity_before - $request->quantity;
 
-            // Create stock movement
-            StockMovement::create([
+        $syncData[$request->source_id] = [
+                'quantity' => $quantity_after,
+                'minimum_threshold' => 0
+            ];
+
+        $quantity_before = $stock->warehouses()->where('warehouse_id', $request->destination_id)->first()->pivot->quantity;
+        $quantity_after = $quantity_before + $request->quantity;
+
+        $syncData[$request->destination_id] = [
+                'quantity' => $quantity_after,
+                'minimum_threshold' => 0
+            ];
+
+        $stock->warehouses()->syncWithoutDetaching($syncData);
+
+
+        StockMovement::create([
                 'stock_id' => $stock->id,
                 'from_warehouse_id' => $stock->warehouse_id,
                 'to_warehouse_id' => $request->destination_id,
@@ -234,10 +297,26 @@ class StockController extends Controller
                 'movement_type' => 'transfer',
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Stock was transferred.']);
-        }
-        else {
-            return response()->json(['success' => false, 'message' => 'Failed to transfer stock.']);
-        }
+        return response()->json(['success' => true, 'message' => 'Stock was transferred.']);
+        
+        //if ($stock->quantity >= $request->quantity) {
+            // Deduct stock from warehouse
+        //    $stock->quantity -= $request->quantity;
+        //    $stock->save();
+
+            // Create stock movement
+        //    StockMovement::create([
+        //        'stock_id' => $stock->id,
+        //         'from_warehouse_id' => $stock->warehouse_id,
+        //         'to_warehouse_id' => $request->destination_id,
+        //         'quantity' => $request->quantity,
+        //         'movement_type' => 'transfer',
+        //     ]);
+
+        //     return response()->json(['success' => true, 'message' => 'Stock was transferred.']);
+        // }
+        // else {
+        //     return response()->json(['success' => false, 'message' => 'Failed to transfer stock.']);
+        // }
     }
 }

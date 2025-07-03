@@ -49,6 +49,12 @@
                             </div>
                         </form>
                     </div>
+                    <div class="col-md-4 mt-2">
+                        <form action="{{ route('stocks.assign') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success">Assign Warehouses</button>
+                        </form>
+                    </div>
                 </div>
                 @endcan
             </div>
@@ -81,24 +87,18 @@
                                     <td>{{ $stock->name }}</td>
                                     <td>{{ $stock->batch }}</td>
                                     <td>{{ $stock->category->name ?? '' }}</td>
-                                    <td>{{ $stock->quantity }}</td>
+                                    <td>
+                                        @if (Auth::user()->hasrole('admin')) {{ $stock->total_quantity }}
+                                        @else {{ $stock->warehouse_qty($user_warehouse_id) }}
+                                        @endif
+                                    </td>
                                     <td>{{ $stock->expiry_date }}</td>
                                     <td>{{ $stock->price }}</td>
                                     <td>{{ $stock->selling_price }}</td>
                                     <td>{{ $stock->location }}</td>
                                     <td>
-                                        <button class="btn btn-warning btn-sm replenish-stock" data-id="{{ $stock->id }}" 
-                                            data-bs-toggle="modal" data-bs-target="#replenishStockModal" title="Add Stock">
-                                            <i class="bi bi-cart-plus"></i>
-                                        </button>
-                                        <button class="btn btn-warning btn-sm dispose-stock" data-id="{{ $stock->id }}" 
-                                            data-bs-toggle="modal" data-bs-target="#disposeStockModal" title="Dispose Stock">
-                                            <i class="bi bi-trash2"></i>
-                                        </button>
-                                        <button class="btn btn-info btn-sm transfer-stock" data-id="{{ $stock->id }}" 
-                                            data-bs-toggle="modal" data-bs-target="#transferStockModal" title="Transfer Stock">
-                                            <i class="bi bi-arrow-left-right"></i>
-                                        </button>
+                                        <a href="{{ route('stocks.show', $stock) }}" class="btn btn-info btn-sm" title="View">
+                                            <i class="bi bi-eye"></i></a>
                                         <button class="btn btn-primary btn-sm edit-stock" data-id="{{ $stock->id }}" 
                                             data-bs-toggle="modal" data-bs-target="#editStockModal" title="Edit">
                                             <i class="bi bi-pencil-square"></i>
@@ -173,15 +173,15 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="warehouse_id">Warehouse</label>
                         <select class="form-control" id="warehouse_id" name="warehouse_id" required>
-                            {{-- <option value="">Select Warehouse</option> --}}
+                            <option value="">Select Warehouse</option>
                             @foreach($warehouses as $warehouse)
                                 <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -251,7 +251,7 @@
                         </select>
                     </div>
                     <div class="mb-3 form-check form-switch">
-                        <label for="edit_status">Is Active?</label>
+                        <label for="active_switch">Is Active?</label>
                         <input class="form-check-input" type="checkbox" role="switch" id="active_switch">
                         <input type="hidden" id="edit_status" name="status">
                     </div>
@@ -280,108 +280,6 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Replenish Stock Modal -->
-<div class="modal fade" id="replenishStockModal" tabindex="-1" aria-labelledby="replenishStockModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="replenishStockModalLabel">Add Stock</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="replenishStockForm">
-                @csrf
-                <div class="modal-body">
-                    <input type="hidden" name="stock_id" id="stock_id">
-                    <div class="mb-3">
-                        <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="source" class="form-label">Source</label>
-                        <input type="text" name="source" id="source" class="form-control">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Dispose Stock Modal -->
-<div class="modal fade" id="disposeStockModal" tabindex="-1" aria-labelledby="disposeStockModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="disposeStockModalLabel">Dispose Stock</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="disposeStockForm">
-                @csrf
-                <div class="modal-body">
-                    <input type="hidden" name="stock_id" id="stock_id">
-                    <div class="mb-3">
-                        <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">Notes</label>
-                        <textarea name="notes" id="notes" class="form-control" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Transfer Stock Modal -->
-<div class="modal fade" id="transferStockModal" tabindex="-1" aria-labelledby="transferStockModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="transferStockModalLabel">Transfer Stock</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="transferStockForm">
-                @csrf
-                <div class="modal-body">
-                    <input type="hidden" name="stock_id" id="stock_id">
-                    <div class="mb-3">
-                        <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="source" class="form-label">Source Warehouse</label>
-                        <select name="source_id" id="source" class="form-control" required>
-                            @foreach ($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="destination" class="form-label">Destination Warehouse</label>
-                        <select name="destination_id" id="destination" class="form-control" required>
-                            @foreach ($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -605,129 +503,6 @@
             });
         });
 
-        //Replenish stock
-        // Get all "Replenish" buttons
-        const replenishButtons = document.querySelectorAll('.replenish-stock');
-        
-        replenishButtons.forEach(button => {
-            button.addEventListener('click', function () {
-            stockId = button.getAttribute('data-id');
-            $('#stock_id').val(stockId);
-            $('#replenishStockModal').modal('show');
-            });
-        });
-        // Handle the form submission
-        document.getElementById('replenishStockForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            fetch("{{ route('stocks.replenish') }}", {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: data.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    window.location.reload();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to replenish stock.',
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-
-        //Dispose stock
-        // Get all "Dispose" buttons
-        const disposeButtons = document.querySelectorAll('.dispose-stock');
-        disposeButtons.forEach(button => {
-            button.addEventListener('click', function () {
-            stockId = button.getAttribute('data-id');
-            $('#stock_id').val(stockId);
-            $('#disposeStockModal').modal('show');
-            });
-        });
-        // Handle the form submission
-        document.getElementById('disposeStockForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            fetch(`/stocks/${stockId}/dispose`, {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: data.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    window.location.reload();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to dispose stock.',
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-
-        //Transfer stock
-        // Get all "Transfer" buttons
-        const transferButtons = document.querySelectorAll('.transfer-stock');
-        transferButtons.forEach(button => {
-            button.addEventListener('click', function () {
-            stockId = button.getAttribute('data-id');
-            $('#stock_id').val(stockId);
-            $('#transferStockModal').modal('show');
-            });
-        });
-        // Handle the form submission
-        document.getElementById('transferStockForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            fetch(`/stocks/${stockId}/transfer`, {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: data.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    window.location.reload();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: data.message,
-                        timer: 1500
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
     });
 </script>
 @endsection

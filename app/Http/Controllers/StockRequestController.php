@@ -118,21 +118,32 @@ class StockRequestController extends Controller
         $request = StockRequest::findOrFail($id);
         $stock = Stock::findOrFail($request->stock_id);
 
-
+        $stock_qty = $stock->warehouses()->where('warehouse_id', 1)->first()->pivot->quantity;
         // Check if the warehouse has enough stock
-        if ($stock->quantity < $request->quantity_requested) {
+        if ($stock_qty < $request->quantity_requested) {
             return redirect()->back()->with('error', 'Insufficient stock in the warehouse.');
         }
 
-        if ($stock->quantity >= $request->quantity_requested) {
+        if ($stock_qty >= $request->quantity_requested) {
             // Deduct stock from warehouse
+
+            $quantity_before = $stock_qty;
+            $quantity_after = $quantity_before - $request->quantity_requested;
+
+            $syncData[1] = [
+                    'quantity' => $quantity_after,
+                    'minimum_threshold' => 0
+                ];
+
+            $stock->warehouses()->syncWithoutDetaching($syncData);
+
             $stock->quantity -= $request->quantity_requested;
             $stock->save();
 
             // Create stock movement
             StockMovement::create([
                 'stock_id' => $request->stock_id,
-                'from_warehouse_id' => $stock->warehouse_id,
+                'from_warehouse_id' => 1,
                 'to_branch_id' => $request->branch_id,
                 'quantity' => $request->quantity_requested,
                 'movement_type' => 'issue',
@@ -178,22 +189,34 @@ class StockRequestController extends Controller
             $stockrequest = StockRequest::findOrFail($requestId);
             $stock = Stock::findOrFail($stockrequest->stock_id);
 
+            $stock_qty = $stock->warehouses()->where('warehouse_id', 1)->first()->pivot->quantity;
 
             // Check if the warehouse has enough stock
-            if ($stock->quantity < $stockrequest->quantity_requested) {
+            if ($stock_qty < $stockrequest->quantity_requested) {
                 continue;
                 //return redirect()->back()->with('error', 'Insufficient stock in the warehouse.');
             }
 
-            if ($stock->quantity >= $stockrequest->quantity_requested) {
+            if ($stock_qty >= $stockrequest->quantity_requested) {
                 // Deduct stock from warehouse
+
+                $quantity_before = $stock_qty;
+                $quantity_after = $quantity_before - $request->quantity_requested;
+
+                $syncData[1] = [
+                        'quantity' => $quantity_after,
+                        'minimum_threshold' => 0
+                    ];
+
+                $stock->warehouses()->syncWithoutDetaching($syncData);
+
                 $stock->quantity -= $stockrequest->quantity_requested;
                 $stock->save();
 
                 // Create stock movement
                 StockMovement::create([
                     'stock_id' => $stockrequest->stock_id,
-                    'from_warehouse_id' => $stock->warehouse_id,
+                    'from_warehouse_id' => 1,
                     'to_branch_id' => $stockrequest->branch_id,
                     'quantity' => $stockrequest->quantity_requested,
                     'movement_type' => 'issue',

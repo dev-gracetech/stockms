@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Branch::class, 'branch_user');
     }
+
+    public function warehouses()
+    {
+        return $this->belongsToMany(Warehouse::class, 'warehouse_user');
+    }
 }

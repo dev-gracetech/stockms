@@ -13,11 +13,18 @@ class Warehouse extends Model
 
     public function stocks()
     {
-        return $this->hasMany(Stock::class);
+        return $this->hasMany(Stock::class)
+            ->withPivot('quantity', 'minimum_threshold')
+            ->withTimestamps();
     }
 
     public function stockRequests()
     {
         return $this->hasMany(StockRequest::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'warehouse_user');
     }
 }
