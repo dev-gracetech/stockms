@@ -173,6 +173,7 @@
                             @endforeach
                         </select>
                     </div>
+                    <input type="hidden" id="warehouse_id" name="warehouse_id" value="1">
                     {{-- <div class="mb-3">
                         <label for="warehouse_id">Warehouse</label>
                         <select class="form-control" id="warehouse_id" name="warehouse_id" required>
