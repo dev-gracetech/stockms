@@ -134,6 +134,7 @@
                         <label for="quantity_requested" class="form-label">Quantity Requested</label>
                         <input type="number" class="form-control" id="quantity_requested" name="quantity_requested" required>
                     </div>
+                    @if(Auth::user()->hasRole('admin') or Auth::user()->hasRole('warehouse manager'))
                     <div class="mb-3">
                         <label for="branch_id" class="form-label">Branch</label>
                         <select class="form-select" id="branch_id" name="branch_id" required>
@@ -143,6 +144,9 @@
                             @endforeach
                         </select>
                     </div>
+                    @else
+                    <input type="hidden" name="branch_id" id="branch_id" value="{{ $user_branch_id}}">
+                    @endif
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>

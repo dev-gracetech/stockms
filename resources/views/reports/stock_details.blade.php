@@ -61,6 +61,8 @@
                             <span class="badge bg-danger">Near Expiry</span>
                         @elseif($stock->is_expired)
                             <span class="badge bg-danger">Expired</span>
+                        @elseif($stock->no_expiry)
+                            &nbsp;
                         @endif
                     </td>
                 </tr>

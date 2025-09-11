@@ -83,6 +83,9 @@
                             <a href="{{route('reports.branch-stock')}}" class="submenu-link">Branch Stock</a>
                         </li>
                         <li class="submenu-item">
+                            <a href="{{route('reports.dispensed-stocks')}}" class="submenu-link">Branch Dispensed Stocks</a>
+                        </li>
+                        <li class="submenu-item">
                             <a href="{{route('reports.stock-track')}}" class="submenu-link">Stocks Updates</a>
                         </li>
                         @endcan

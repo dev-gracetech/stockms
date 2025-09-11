@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/current-stocks', [ReportController::class, 'currentStocks'])->name('reports.current-stocks');
     Route::get('/reports/disposed-stocks', [ReportController::class, 'disposedStocks'])->name('reports.disposed-stocks');
     Route::get('/reports/transferred-stocks', [ReportController::class, 'transferredStocks'])->name('reports.transferred-stocks');
+    Route::get('/reports/dispensed-stocks', [ReportController::class, 'dispensedStocks'])->name('reports.dispensed-stocks');
 
     //System Settings
     //Route::prefix('system-settings')->group(function () {

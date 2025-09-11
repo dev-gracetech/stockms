@@ -35,6 +35,7 @@
         <thead>
             <tr>
                 <th>Product</th>
+                <th>Warehouse</th>
                 <th>Batch Number</th>
                 <th>Buying Price</th>
                 <th>Selling Price</th>
@@ -46,23 +47,29 @@
         <tbody>
             @foreach($results as $result)
                 <tr>
-                    <td>{{ $result->name}}</td>
-                    <td>{{ $result->batch}}</td>
-                    <td>${{ $result->price}}</td>
+                     <td>{{ $result->stock }}</td>
+                     <td>{{ $result->warehouse }}</td>
+                    <td>{{ $result->batch }}</td>
+                    <td>${{ $result->price }}</td>
                     <td>${{ $result->selling_price}}</td>
+                    {{-- <td>{{ $result->s->name}}</td>
+                    <td>{{ $result->s->batch}}</td>
+                    <td>${{ $result->s->price}}</td>
+                    <td>${{ $result->s->selling_price}}</td> --}}
                     <td>
-                        @if(request('warehouse_id') == null)
+                        {{ $result->total_quantity }}
+                        {{-- @if(request('warehouse_id') == null)
                         {{ $result->total_quantity }}
                         @else
                         {{ $result->warehouse_qty(request('warehouse_id')) }}
-                        @endif
+                        @endif --}}
                     </td>
-                    <td>${{ $result->quantity * $result->price }}</td>
-                    <td>${{ $result->quantity * $result->selling_price }}</td>
+                    <td>${{ $result->total_quantity * $result->price }}</td>
+                    <td>${{ $result->total_quantity * $result->selling_price }}</td>
                 </tr>
             @endforeach
             <tr>
-                <td colspan="3"></td>
+                <td colspan="4"></td>
                 <td><strong>Grand Total:</strong></td>
                 <td>{{ $totalQuantity }}</td>
                 <td>${{ $totalBuyingPrice }}</td>

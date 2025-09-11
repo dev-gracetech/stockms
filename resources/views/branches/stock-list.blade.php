@@ -23,7 +23,9 @@
                                 <th>Batch Number</th>
                                 <th>Quantity</th>
                                 <th>Expiry Date</th>
+                                @can('warehouse_menu_access')
                                 <th>Buying Price</th>
+                                @endcan
                                 <th>Selling Price</th>
                                 <th></th>
                             </tr>
@@ -36,7 +38,9 @@
                                     <td>{{ $stock->stock->batch }}</td>
                                     <td>{{ $stock->quantity }}</td>
                                     <td>{{ $stock->stock->expiry_date }}</td>
+                                    @can('warehouse_menu_access')
                                     <td>{{ $stock->stock->price }}</td>
+                                    @endcan
                                     <td>{{ $stock->stock->selling_price }}</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-warning dispense-stock" data-bs-toggle="modal" 

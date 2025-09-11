@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\StockTransfer;
 use App\Models\StockMovement;
@@ -172,7 +173,14 @@ class ReportController extends Controller
             } else { 
                 $stock->is_near_expiry = false;
             }
-            
+
+            $stock->no_expiry = false;
+            if(($stock->expiry_date=='') || ($stock->expiry_date==null))
+            {
+                $stock->no_expiry = true;
+                $stock->is_near_expiry = false;
+                $stock->is_expired = false;
+            }
         });
 
         // Filter by status
@@ -240,16 +248,28 @@ class ReportController extends Controller
 
     public function currentStocks(Request $request)
     {
-        $query = Stock::query();
+        //$query = Stock::query();
+
+        $query = DB::table('stock_warehouse as sw')
+            ->join('stocks as s', 'sw.stock_id', '=', 's.id')
+            ->join('warehouses as w', 'sw.warehouse_id', '=', 'w.id')
+            ->select(
+                's.name as stock', 's.batch as batch', 's.price as price', 's.selling_price as selling_price',
+                'w.name as warehouse',
+                DB::raw('SUM(sw.quantity) as total_quantity')
+            )
+            ->groupBy('s.name','s.batch','s.price','s.selling_price', 'w.name');
 
         // Filter by warehouse
-        //if ($request->warehouse_id) {
-        //    $query->where('warehouse_id', $request->warehouse_id);
-        //}
+        if ($request->warehouse_id) {
+            $query->where('w.id', $request->warehouse_id);
+        }
 
+        //$totalQuantity = DB::table('stock_warehouse')->sum('quantity');
         // Filter by product
         if ($request->product_name) {
-            $query->where('name', $request->product_name);
+            $query->where('s.name', $request->product_name);
+            //$totalQuantity = DB::table('stock_warehouse')->sum('quantity')->
         }
 
         // Filter by date range
@@ -264,17 +284,20 @@ class ReportController extends Controller
         $filters = $request->all();
         $products = Stock::distinct('name')->pluck('name');
 
+
         return view('reports.current_stock', [
             'warehouses' => Warehouse::all()->sortBy('name'),
             'results' => $results,
             'filters' => $filters,
             'products' => $products,
-            'totalQuantity' => $results->sum('quantity'),
+            'totalQuantity' => $results->sum('total_quantity'),
+            //'totalBuyingPrice' => 0,
+            //'totalSales' => 0,
             'totalBuyingPrice' => $results->sum(function ($result) {
-                return $result->price * $result->quantity;
+                return $result->price * $result->total_quantity;
             }),
             'totalSales' => $results->sum(function ($result) {
-                return $result->selling_price * $result->quantity;
+                return $result->selling_price * $result->total_quantity;
             }),
         ]);
     }
@@ -349,6 +372,52 @@ class ReportController extends Controller
 
         return view('reports.transferred_stocks', [
             'warehouses' => Warehouse::all()->sortBy('name'),
+            'products' => Stock::distinct('name')->pluck('name'),
+            'stockMovements' => $stockMovements->sortByDesc('created_at'),
+            'totalBuyingPrice' => $stockMovements->sum(function ($stockMovement) {
+                if ($stockMovement->stock === null) {
+                    return 0;
+                }
+                return $stockMovement->quantity * $stockMovement->stock->price;
+            }),
+            'totalSales' => $stockMovements->sum(function ($stockMovement) {
+                if ($stockMovement->stock === null) {
+                    return 0;
+                }
+                return $stockMovement->quantity * $stockMovement->stock->selling_price;
+            }),
+            'filters' => $request->all(),
+        ]);
+    }
+
+    public function dispensedStocks(Request $request)
+    {
+        $query = StockMovement::query();
+
+        // Filter by branch
+        if ($request->branch_id) {
+            $query->where('from_branch_id', $request->branch_id);
+        }
+
+        // Filter by product
+        if ($request->product_name) {
+            $query->whereHas('stock', function ($q) use ($request) {
+                $q->where('name', $request->product_name);
+            });
+        }
+
+        // Filter by date range
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->start_date)->startOfDay(),
+                Carbon::parse($request->end_date)->endOfDay(),
+            ]);
+        }
+
+        $stockMovements = $query->with(['stock','fromBranch'])->where('movement_type','dispense')->get();
+
+        return view('reports.dispensed_stocks', [
+            'branches' => Branch::all()->sortBy('name'),
             'products' => Stock::distinct('name')->pluck('name'),
             'stockMovements' => $stockMovements->sortByDesc('created_at'),
             'totalBuyingPrice' => $stockMovements->sum(function ($stockMovement) {
