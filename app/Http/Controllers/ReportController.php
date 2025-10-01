@@ -139,23 +139,25 @@ class ReportController extends Controller
         // Calculate total quantity, overstock, less stock, and expiry alerts
         $stocks->each(function ($stock) use ($overstockThreshold, $lessStockThreshold, $expiryAlertDays) {
             // Calculate total quantity across all branches
-            //$stock->total_quantity = $stock->branches->sum('pivot.quantity');
+            $stock->total_quantity = 0;
             if(!auth()->user()->hasrole('branch user'))
             {
                 $branches = BranchInventory::where('stock_id', $stock->id)->pluck('branch_id');
                 $stock->branch = Branch::whereIn('id', $branches)->get();
+                //$stock->total_quantity = BranchInventory::where('stock_id', $stock->id)->pluck('quantity')->first();
             }
             else
             {
                 $branch = auth()->user()->branches->pluck('id');
                 $stock_branch = BranchInventory::where('branch_id', $branch)->where('stock_id', $stock->id)->first();
                 $stock->quantity = $stock_branch->quantity;
+                //$stock->total_quantity = $stock_branch->quantity;
             }
-            //$stock->total_quantity = $stock->branch->sum('pivot.quantity');
+            $stock->total_qty = DB::table('branch_inventories')->where('stock_id', $stock->id)->sum('quantity');
             // Determine overstock and less stock
-            $stock->is_overstock = $stock->quantity > $overstockThreshold;
+            $stock->is_overstock = $stock->total_qty > $overstockThreshold;
             //$stock->is_less_stock = $stock->quantity < $lessStockThreshold;
-            $stock->is_less_stock = $stock->quantity < $stock->minimum_threshold;
+            $stock->is_less_stock = $stock->total_qty < $lessStockThreshold;
 
             // Determine if the stock is nearing expiry or expired
             $today = now()->startOfDay();

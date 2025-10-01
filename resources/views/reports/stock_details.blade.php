@@ -46,7 +46,7 @@
                             @endforeach
                         </td>
                     @endif
-                    <td>{{ $stock->quantity }}</td>
+                    <td>{{ $stock->total_qty }}</td>
                     <td>{{ $stock->expiry_date }}</td>
                     <td>
                         @if($stock->is_overstock)

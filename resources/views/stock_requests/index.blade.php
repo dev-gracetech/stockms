@@ -53,6 +53,7 @@
                             <th>Reference ID</th>
                             <th>Product</th>
                             <th>Batch</th>
+                            <th>Expiry date</th>
                             <th>Branch</th>
                             <th>Quantity Requested</th>
                             <th>Date Requested</th>
@@ -218,6 +219,7 @@
                 { data: 'reference_id', name: 'reference_id' },
                 { data: 'stock.name', name: 'stock.name' },
                 { data: 'stock.batch', name: 'stock.batch' },
+                { data: 'stock.expiry_date', name: 'stock.expiry_date' },
                 { data: 'branch.name', name: 'branch.name' },
                 { data: 'quantity_requested', name: 'quantity_requested' },
                 { data: 'created_at', name: 'created_at', render: function(data, type, row) { return moment(data).format('Y-MM-D'); } },
