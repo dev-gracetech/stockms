@@ -145,6 +145,7 @@ class ReportController extends Controller
                 $branches = BranchInventory::where('stock_id', $stock->id)->pluck('branch_id');
                 $stock->branch = Branch::whereIn('id', $branches)->get();
                 //$stock->total_quantity = BranchInventory::where('stock_id', $stock->id)->pluck('quantity')->first();
+                $stock->total_qty = DB::table('branch_inventories')->where('stock_id', $stock->id)->sum('quantity');
             }
             else
             {
@@ -152,8 +153,9 @@ class ReportController extends Controller
                 $stock_branch = BranchInventory::where('branch_id', $branch)->where('stock_id', $stock->id)->first();
                 $stock->quantity = $stock_branch->quantity;
                 //$stock->total_quantity = $stock_branch->quantity;
+                $stock->total_qty = DB::table('branch_inventories')->where('branch_id', $branch)->where('stock_id', $stock->id)->sum('quantity');
             }
-            $stock->total_qty = DB::table('branch_inventories')->where('stock_id', $stock->id)->sum('quantity');
+            //$stock->total_qty = DB::table('branch_inventories')->where('stock_id', $stock->id)->sum('quantity');
             // Determine overstock and less stock
             $stock->is_overstock = $stock->total_qty > $overstockThreshold;
             //$stock->is_less_stock = $stock->quantity < $lessStockThreshold;
